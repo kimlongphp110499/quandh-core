@@ -36,6 +36,7 @@ class RoleService
             $permissionIds = $data['permission_ids'] ?? null;
             unset($data['permission_ids']);
             $data['guard_name'] = $data['guard_name'] ?? config('auth.defaults.guard', 'web');
+            $data['organization_id'] = null;
 
             $role = Role::create($data);
 
@@ -52,6 +53,7 @@ class RoleService
         return DB::transaction(function () use ($role, $data) {
             $permissionIds = $data['permission_ids'] ?? null;
             unset($data['permission_ids']);
+            $data['organization_id'] = null;
 
             $role->update($data);
 

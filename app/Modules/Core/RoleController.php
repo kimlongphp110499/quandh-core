@@ -82,7 +82,6 @@ class RoleController extends Controller
      *
      * @bodyParam name string required Tên role. Example: admin
      * @bodyParam guard_name string Guard name (mặc định web). Example: web
-     * @bodyParam organization_id integer ID organization (nullable). Example: 1
      * @bodyParam permission_ids array Danh sách ID permission để sync. Example: [1, 2, 3]
      * @apiResource App\Modules\Core\Resources\RoleResource status=201
      * @apiResourceModel App\Modules\Core\Models\Role with=permissions
@@ -100,7 +99,6 @@ class RoleController extends Controller
      * @urlParam role integer required ID role. Example: 1
      * @bodyParam name string Tên role. Example: editor
      * @bodyParam guard_name string Guard name. Example: web
-     * @bodyParam organization_id integer ID organization (nullable). Example: 1
      * @bodyParam permission_ids array Danh sách ID permission để sync (gửi mảng rỗng để bỏ hết). Example: [1, 2]
      * @apiResource App\Modules\Core\Resources\RoleResource
      * @apiResourceModel App\Modules\Core\Models\Role with=permissions

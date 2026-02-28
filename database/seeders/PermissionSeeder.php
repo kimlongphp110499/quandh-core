@@ -198,54 +198,50 @@ class PermissionSeeder extends Seeder
     /** Tạo các role mặc định. */
     protected function seedRoles(): void
     {
-        $defaultOrganization = Organization::where('slug', 'default')->first();
-        if (! $defaultOrganization) {
-            return;
-        }
+        // Role global: không gắn organization_id trực tiếp trên bảng roles.
+        Role::firstOrCreate(
+            ['name' => 'Super Admin', 'guard_name' => self::GUARD],
+            ['organization_id' => null]
+        );
+        Role::firstOrCreate(
+            ['name' => 'Admin', 'guard_name' => self::GUARD],
+            ['organization_id' => null]
+        );
+        Role::firstOrCreate(
+            ['name' => 'Editor', 'guard_name' => self::GUARD],
+            ['organization_id' => null]
+        );
+        Role::firstOrCreate(
+            ['name' => 'Vai trò mẫu', 'guard_name' => self::GUARD],
+            ['organization_id' => null]
+        );
 
-        // Tất cả role gắn với organization mặc định (model_has_roles.organization_id NOT NULL khi bật teams)
-        // Super Admin: toàn quyền, thuộc organization mặc định (roles chuẩn Spatie, không có status)
-        Role::firstOrCreate(
-            ['name' => 'Super Admin', 'guard_name' => self::GUARD, 'organization_id' => $defaultOrganization->id]
-        );
-        Role::firstOrCreate(
-            ['name' => 'Admin', 'guard_name' => self::GUARD, 'organization_id' => $defaultOrganization->id]
-        );
-        Role::firstOrCreate(
-            ['name' => 'Editor', 'guard_name' => self::GUARD, 'organization_id' => $defaultOrganization->id]
-        );
-        Role::firstOrCreate(
-            ['name' => 'Vai trò mẫu', 'guard_name' => self::GUARD, 'organization_id' => $defaultOrganization->id]
-        );
+        // Chuẩn hóa dữ liệu cũ nếu còn role theo organization.
+        Role::query()->update(['organization_id' => null]);
     }
 
     /** Gán permission cho từng role. */
     protected function assignPermissionsToRoles(): void
     {
-        $defaultOrganization = Organization::where('slug', 'default')->first();
-        if (! $defaultOrganization) {
-            return;
-        }
-
         $allPermissionNames = $this->getAllPermissionNames();
-        $superAdmin = Role::where('name', 'Super Admin')->where('organization_id', $defaultOrganization->id)->where('guard_name', self::GUARD)->first();
+        $superAdmin = Role::where('name', 'Super Admin')->where('guard_name', self::GUARD)->first();
         if ($superAdmin) {
             $superAdmin->syncPermissions($allPermissionNames);
         }
 
-        $admin = Role::where('name', 'Admin')->where('organization_id', $defaultOrganization->id)->where('guard_name', self::GUARD)->first();
+        $admin = Role::where('name', 'Admin')->where('guard_name', self::GUARD)->first();
         if ($admin) {
             $admin->syncPermissions($allPermissionNames);
         }
 
         $editorPermissionNames = $this->getEditorPermissionNames();
-        $editor = Role::where('name', 'Editor')->where('organization_id', $defaultOrganization->id)->where('guard_name', self::GUARD)->first();
+        $editor = Role::where('name', 'Editor')->where('guard_name', self::GUARD)->first();
         if ($editor) {
             $editor->syncPermissions($editorPermissionNames);
         }
 
         $samplePermissionNames = $this->getSamplePermissionNames();
-        $sampleRole = Role::where('name', 'Vai trò mẫu')->where('organization_id', $defaultOrganization->id)->where('guard_name', self::GUARD)->first();
+        $sampleRole = Role::where('name', 'Vai trò mẫu')->where('guard_name', self::GUARD)->first();
         if ($sampleRole) {
             $sampleRole->syncPermissions($samplePermissionNames);
         }
@@ -264,8 +260,8 @@ class PermissionSeeder extends Seeder
         }
         setPermissionsTeamId($defaultOrganization->id);
 
-        $superAdmin = Role::where('name', 'Super Admin')->where('organization_id', $defaultOrganization->id)->where('guard_name', self::GUARD)->first();
-        $sampleRole = Role::where('name', 'Vai trò mẫu')->where('organization_id', $defaultOrganization->id)->where('guard_name', self::GUARD)->first();
+        $superAdmin = Role::where('name', 'Super Admin')->where('guard_name', self::GUARD)->first();
+        $sampleRole = Role::where('name', 'Vai trò mẫu')->where('guard_name', self::GUARD)->first();
 
         $superAdminUser = User::updateOrCreate(
             ['email' => 'admin@example.com'],
