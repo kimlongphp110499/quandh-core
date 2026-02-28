@@ -45,8 +45,16 @@ Quản lý tài khoản người dùng: thống kê, danh sách, chi tiết, CRU
 |---|---|
 | **Method** | POST |
 | **Path** | `/api/users` |
-| **Body** | `name` (required), `email` (required, unique), `password` (required, min 6, confirmed), `password_confirmation` (required), `status` (optional: active \| inactive \| banned). |
+| **Body** | `name` (required), `email` (required, unique), `password` (required, min 6, confirmed), `password_confirmation` (required), `status` (optional: active \| inactive \| banned), `assignments` (optional). |
 | **Response** | 201, object người dùng + `"message": "Tài khoản đã được tạo thành công!"`. |
+
+**Mẫu assignments**
+```json
+[
+  { "role_id": 1, "organization_ids": [2, 3] },
+  { "role_id": 5, "organization_ids": [9] }
+]
+```
 
 ---
 
@@ -56,7 +64,7 @@ Quản lý tài khoản người dùng: thống kê, danh sách, chi tiết, CRU
 |---|---|
 | **Method** | PUT / PATCH |
 | **Path** | `/api/users/{id}` |
-| **Body** | `name`, `email` (unique nếu đổi), `password` (optional, min 6, confirmed), `password_confirmation`, `status`. |
+| **Body** | `name`, `email` (unique nếu đổi), `password` (optional, min 6, confirmed), `password_confirmation`, `status`, `assignments` (optional). Khi gửi `assignments`, hệ thống đồng bộ lại toàn bộ phân quyền theo tổ chức của user. |
 | **Response** | Object người dùng đã cập nhật. |
 
 ---

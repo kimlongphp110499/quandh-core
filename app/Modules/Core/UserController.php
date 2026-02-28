@@ -84,6 +84,7 @@ class UserController extends Controller
      * @bodyParam password string required Mật khẩu (tối thiểu 6 ký tự). Example: password123
      * @bodyParam password_confirmation string required Xác nhận mật khẩu.
      * @bodyParam status string Trạng thái: active, inactive, banned. Example: active
+     * @bodyParam assignments array Danh sách gán vai trò theo tổ chức. Ví dụ: [{"role_id":1,"organization_ids":[2,3]},{"role_id":5,"organization_ids":[9]}]
      * @apiResource App\Modules\Core\Resources\UserResource status=201
      * @apiResourceModel App\Modules\Core\Models\User
      * @apiResourceAdditional success=true message="Tài khoản đã được tạo thành công!"
@@ -103,6 +104,7 @@ class UserController extends Controller
      * @bodyParam password string Mật khẩu mới (nếu muốn đổi).
      * @bodyParam password_confirmation string Xác nhận mật khẩu.
      * @bodyParam status string Trạng thái: active, inactive, banned.
+     * @bodyParam assignments array Danh sách gán vai trò theo tổ chức. Khi gửi field này, hệ thống sẽ đồng bộ lại toàn bộ phân quyền của user.
      * @apiResource App\Modules\Core\Resources\UserResource
      * @apiResourceModel App\Modules\Core\Models\User
      * @apiResourceAdditional success=true message="Tài khoản đã được cập nhật!"
