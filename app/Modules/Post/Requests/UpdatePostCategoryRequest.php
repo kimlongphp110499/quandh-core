@@ -39,4 +39,9 @@ class UpdatePostCategoryRequest extends FormRequest
             'parent_id.exists' => 'Danh mục cha không tồn tại.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

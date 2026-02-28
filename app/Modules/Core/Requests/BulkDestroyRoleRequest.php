@@ -18,4 +18,9 @@ class BulkDestroyRoleRequest extends FormRequest
             'ids.*' => 'exists:roles,id',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

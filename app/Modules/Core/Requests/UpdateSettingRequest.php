@@ -48,4 +48,29 @@ class UpdateSettingRequest extends FormRequest
             '*.array' => 'Giá trị phải là mảng/đối tượng.',
         ];
     }
+
+    /**
+     * Mô tả body mẫu cho tài liệu Scribe.
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'language' => [
+                'description' => 'Ngôn ngữ hệ thống.',
+                'example' => 'vi',
+            ],
+            'copyright' => [
+                'description' => 'Thông tin bản quyền hiển thị.',
+                'example' => '© 2026 QuânDH',
+            ],
+            'log_retention_days' => [
+                'description' => 'Số ngày lưu log.',
+                'example' => 90,
+            ],
+            'social' => [
+                'description' => 'Cấu hình object/json cho nhóm social (nếu có).',
+                'example' => ['facebook' => 'https://facebook.com/quandh'],
+            ],
+        ];
+    }
 }

@@ -25,4 +25,9 @@ class ImportPostCategoryRequest extends FormRequest
             'file.mimes'    => 'File phải có định dạng xlsx, xls hoặc csv.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

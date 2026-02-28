@@ -29,4 +29,9 @@ class StoreRoleRequest extends FormRequest
             'organization_id.exists' => 'Organization không tồn tại.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

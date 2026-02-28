@@ -40,4 +40,9 @@ class UpdatePostRequest extends FormRequest
             'images.*.image'     => 'File phải là hình ảnh.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

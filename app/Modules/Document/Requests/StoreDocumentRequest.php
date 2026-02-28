@@ -34,4 +34,9 @@ class StoreDocumentRequest extends FormRequest
             'attachments.*' => 'file|max:10240',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

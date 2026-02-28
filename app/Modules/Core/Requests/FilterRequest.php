@@ -40,4 +40,49 @@ class FilterRequest extends FormRequest
             'limit.max'        => 'Số lượng phải nhỏ hơn 100.',
         ];
     }
+
+    /**
+     * Tham số query chuẩn cho tài liệu Scribe.
+     */
+    public function queryParameters(): array
+    {
+        return [
+            'search' => [
+                'description' => 'Từ khóa tìm kiếm theo tên hoặc trường chính.',
+                'example' => 'van-ban',
+            ],
+            'status' => [
+                'description' => 'Lọc theo trạng thái.',
+                'example' => 'active',
+            ],
+            'from_date' => [
+                'description' => 'Lọc từ ngày tạo (Y-m-d).',
+                'example' => '2026-01-01',
+            ],
+            'to_date' => [
+                'description' => 'Lọc đến ngày tạo (Y-m-d).',
+                'example' => '2026-12-31',
+            ],
+            'sort_by' => [
+                'description' => 'Trường dùng để sắp xếp.',
+                'example' => 'created_at',
+            ],
+            'sort_order' => [
+                'description' => 'Thứ tự sắp xếp.',
+                'example' => 'desc',
+            ],
+            'limit' => [
+                'description' => 'Số bản ghi mỗi trang (1-100).',
+                'example' => 10,
+            ],
+        ];
+    }
+
+    /**
+     * Tránh cảnh báo của Scribe với request dùng cho query.
+     */
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

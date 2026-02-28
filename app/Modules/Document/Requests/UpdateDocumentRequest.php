@@ -39,4 +39,9 @@ class UpdateDocumentRequest extends FormRequest
             'remove_attachment_ids.*' => 'integer|exists:media,id',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

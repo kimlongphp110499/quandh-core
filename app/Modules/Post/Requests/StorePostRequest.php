@@ -41,4 +41,9 @@ class StorePostRequest extends FormRequest
             'images.*.max'      => 'Mỗi ảnh tối đa 5MB.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

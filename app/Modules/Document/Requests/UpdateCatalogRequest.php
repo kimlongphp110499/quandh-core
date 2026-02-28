@@ -20,4 +20,22 @@ class UpdateCatalogRequest extends FormRequest
             'status' => ['sometimes', DocumentStatusEnum::rule()],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => [
+                'description' => 'Tên danh mục.',
+                'example' => 'Lĩnh vực pháp lý',
+            ],
+            'description' => [
+                'description' => 'Mô tả danh mục.',
+                'example' => 'Cập nhật mô tả danh mục.',
+            ],
+            'status' => [
+                'description' => 'Trạng thái mới.',
+                'example' => DocumentStatusEnum::Active->value,
+            ],
+        ];
+    }
 }

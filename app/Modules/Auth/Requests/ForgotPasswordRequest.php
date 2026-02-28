@@ -28,4 +28,9 @@ class ForgotPasswordRequest extends FormRequest
             'email.email'    => 'Email không hợp lệ.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

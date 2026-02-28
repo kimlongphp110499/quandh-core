@@ -30,4 +30,9 @@ class UpdateOrganizationRequest extends FormRequest
             'sort_order'  => 'nullable|integer|min:0',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

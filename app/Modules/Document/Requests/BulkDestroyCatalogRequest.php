@@ -18,4 +18,14 @@ class BulkDestroyCatalogRequest extends FormRequest
             'ids.*' => 'integer',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'ids' => [
+                'description' => 'Danh sách ID cần xóa.',
+                'example' => [1, 2, 3],
+            ],
+        ];
+    }
 }

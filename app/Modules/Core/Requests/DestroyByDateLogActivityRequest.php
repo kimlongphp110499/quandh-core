@@ -27,4 +27,9 @@ class DestroyByDateLogActivityRequest extends FormRequest
             'to_date.after_or_equal' => 'Đến ngày phải sau hoặc bằng từ ngày.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

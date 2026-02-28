@@ -31,4 +31,9 @@ class BulkUpdateStatusPostCategoryRequest extends FormRequest
             'status.in'      => 'Trạng thái không hợp lệ. Chỉ chấp nhận active, inactive.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

@@ -18,4 +18,9 @@ class BulkDestroyDocumentRequest extends FormRequest
             'ids.*' => 'integer|exists:documents,id',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

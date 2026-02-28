@@ -18,4 +18,9 @@ class ChangeStatusDocumentRequest extends FormRequest
             'status' => ['required', DocumentStatusEnum::rule()],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

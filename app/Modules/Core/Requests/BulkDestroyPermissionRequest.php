@@ -18,4 +18,9 @@ class BulkDestroyPermissionRequest extends FormRequest
             'ids.*' => 'exists:permissions,id',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

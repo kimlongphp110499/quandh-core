@@ -17,4 +17,13 @@ class ImportCatalogRequest extends FormRequest
             'file' => 'required|file|mimes:xlsx,xls,csv',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'file' => [
+                'description' => 'File Excel để import (xlsx, xls, csv).',
+            ],
+        ];
+    }
 }

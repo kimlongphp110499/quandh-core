@@ -21,4 +21,9 @@ class UpdatePermissionRequest extends FormRequest
             'parent_id'   => 'nullable|exists:permissions,id',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

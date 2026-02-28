@@ -26,4 +26,9 @@ class BulkDestroyPostRequest extends FormRequest
             'ids.*.exists' => 'Một trong các bài viết không tồn tại.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

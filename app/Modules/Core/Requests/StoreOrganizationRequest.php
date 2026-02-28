@@ -32,4 +32,9 @@ class StoreOrganizationRequest extends FormRequest
             'status.in'     => 'Trạng thái chỉ chấp nhận active, inactive.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

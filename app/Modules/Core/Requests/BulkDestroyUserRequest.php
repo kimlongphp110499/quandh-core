@@ -27,4 +27,9 @@ class BulkDestroyUserRequest extends FormRequest
             'ids.min'      => 'Danh sách người dùng phải có ít nhất 1 người dùng.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

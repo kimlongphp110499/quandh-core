@@ -20,4 +20,18 @@ class BulkUpdateStatusCatalogRequest extends FormRequest
             'status' => ['required', DocumentStatusEnum::rule()],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'ids' => [
+                'description' => 'Danh sách ID cần cập nhật trạng thái.',
+                'example' => [1, 2, 3],
+            ],
+            'status' => [
+                'description' => 'Trạng thái mới áp dụng hàng loạt.',
+                'example' => DocumentStatusEnum::Inactive->value,
+            ],
+        ];
+    }
 }

@@ -30,4 +30,9 @@ class BulkUpdateStatusPostRequest extends FormRequest
             'status.in'       => 'Trạng thái không hợp lệ.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

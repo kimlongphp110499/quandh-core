@@ -17,4 +17,9 @@ class ImportDocumentRequest extends FormRequest
             'file' => 'required|file|mimes:xlsx,xls,csv',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

@@ -45,4 +45,9 @@ class UpdateUserRequest extends FormRequest
             'status.in' => 'Trạng thái không hợp lệ. Chỉ chấp nhận active, inactive, banned.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

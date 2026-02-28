@@ -20,4 +20,9 @@ class BulkUpdateStatusDocumentRequest extends FormRequest
             'status' => ['required', DocumentStatusEnum::rule()],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

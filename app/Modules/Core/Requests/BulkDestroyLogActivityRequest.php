@@ -27,4 +27,9 @@ class BulkDestroyLogActivityRequest extends FormRequest
             'ids.min'      => 'Danh sách nhật ký phải có ít nhất 1 bản ghi.',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

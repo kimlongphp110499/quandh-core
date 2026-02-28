@@ -21,4 +21,9 @@ class UpdateRoleRequest extends FormRequest
             'permission_ids.*' => 'exists:permissions,id',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }

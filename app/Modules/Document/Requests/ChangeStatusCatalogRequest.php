@@ -18,4 +18,14 @@ class ChangeStatusCatalogRequest extends FormRequest
             'status' => ['required', DocumentStatusEnum::rule()],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'status' => [
+                'description' => 'Trạng thái cần chuyển.',
+                'example' => DocumentStatusEnum::Inactive->value,
+            ],
+        ];
+    }
 }

@@ -18,4 +18,9 @@ class BulkDestroyOrganizationRequest extends FormRequest
             'ids.*' => 'exists:organizations,id',
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [];
+    }
 }
