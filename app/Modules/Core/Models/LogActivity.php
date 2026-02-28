@@ -2,6 +2,7 @@
 
 namespace App\Modules\Core\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,6 +10,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LogActivity extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Modules\Core\Models\LogActivityFactory::new();
+    }
+
     protected $table = 'log_activities';
 
     protected $fillable = [

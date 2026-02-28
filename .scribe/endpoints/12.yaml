@@ -547,7 +547,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"group:users","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng","sort_order":0,"parent_id":null,"created_at":"06:28:52 28\/02\/2026","updated_at":"06:28:52 28\/02\/2026"},{"id":1,"name":"group:users","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng","sort_order":0,"parent_id":null,"created_at":"06:28:52 28\/02\/2026","updated_at":"06:28:52 28\/02\/2026"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"\/?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"\/","per_page":10,"to":2,"total":2},"success":"true"}'
+        content: '{"data":[{"id":166,"name":"users.update.4027","guard_name":"web","description":null,"sort_order":95,"parent_id":null,"created_at":"11:16:45 28\/02\/2026","updated_at":"11:16:45 28\/02\/2026"},{"id":167,"name":"documents.index.6955","guard_name":"web","description":null,"sort_order":39,"parent_id":null,"created_at":"11:16:45 28\/02\/2026","updated_at":"11:16:45 28\/02\/2026"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"\/?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"\/","per_page":10,"to":2,"total":2},"success":"true"}'
         headers: []
         description: ''
     responseFields: []
@@ -614,7 +614,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"group:users","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng","sort_order":0,"parent_id":null,"parent":null,"children":[{"id":2,"name":"users.stats","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - Th\u1ed1ng k\u00ea","sort_order":0,"parent_id":1,"created_at":"06:28:52 28\/02\/2026","updated_at":"06:28:52 28\/02\/2026"},{"id":3,"name":"users.index","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - Danh s\u00e1ch","sort_order":1,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":4,"name":"users.show","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - Chi ti\u1ebft","sort_order":2,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":5,"name":"users.store","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - T\u1ea1o m\u1edbi","sort_order":3,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":6,"name":"users.update","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - C\u1eadp nh\u1eadt","sort_order":4,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":7,"name":"users.destroy","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - X\u00f3a","sort_order":5,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":8,"name":"users.bulkDestroy","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - X\u00f3a h\u00e0ng lo\u1ea1t","sort_order":6,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":9,"name":"users.bulkUpdateStatus","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - C\u1eadp nh\u1eadt tr\u1ea1ng th\u00e1i h\u00e0ng lo\u1ea1t","sort_order":7,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":10,"name":"users.changeStatus","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - \u0110\u1ed5i tr\u1ea1ng th\u00e1i","sort_order":8,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":11,"name":"users.export","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - Xu\u1ea5t Excel","sort_order":9,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"},{"id":12,"name":"users.import","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng - Nh\u1eadp Excel","sort_order":10,"parent_id":1,"created_at":"06:28:53 28\/02\/2026","updated_at":"06:28:53 28\/02\/2026"}],"created_at":"06:28:52 28\/02\/2026","updated_at":"06:28:52 28\/02\/2026"},"success":"true"}'
+        content: '{"data":{"id":169,"name":"users.index.4524","guard_name":"web","description":"Commodi incidunt iure odit.","sort_order":45,"parent_id":168,"parent":{"id":168,"name":"documents.show.967"},"children":[{"id":170,"name":"roles.destroy.1904","guard_name":"web","description":null,"sort_order":93,"parent_id":169,"created_at":"11:16:45 28\/02\/2026","updated_at":"11:16:45 28\/02\/2026"}],"created_at":"11:16:45 28\/02\/2026","updated_at":"11:16:45 28\/02\/2026"},"success":"true"}'
         headers: []
         description: ''
     responseFields: []
@@ -717,7 +717,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"group:users","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng","sort_order":0,"parent_id":null,"created_at":"06:28:52 28\/02\/2026","updated_at":"06:28:52 28\/02\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c t\u1ea1o th\u00e0nh c\u00f4ng!"}'
+        content: '{"data":{"id":171,"name":"roles.index.660","guard_name":"web","description":"Et fugiat sunt nihil accusantium.","sort_order":91,"parent_id":null,"created_at":"11:16:45 28\/02\/2026","updated_at":"11:16:45 28\/02\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c t\u1ea1o th\u00e0nh c\u00f4ng!"}'
         headers: []
         description: ''
     responseFields: []
@@ -844,7 +844,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"group:users","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng","sort_order":0,"parent_id":null,"created_at":"06:28:52 28\/02\/2026","updated_at":"06:28:52 28\/02\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
+        content: '{"data":{"id":172,"name":"roles.index.4338","guard_name":"web","description":null,"sort_order":7,"parent_id":null,"created_at":"11:16:45 28\/02\/2026","updated_at":"11:16:45 28\/02\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
         headers: []
         description: ''
     responseFields: []
@@ -971,7 +971,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"group:users","guard_name":"web","description":"Ng\u01b0\u1eddi d\u00f9ng","sort_order":0,"parent_id":null,"created_at":"06:28:52 28\/02\/2026","updated_at":"06:28:52 28\/02\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
+        content: '{"data":{"id":173,"name":"roles.index.3491","guard_name":"web","description":"Sunt nihil accusantium harum mollitia.","sort_order":86,"parent_id":null,"created_at":"11:16:45 28\/02\/2026","updated_at":"11:16:45 28\/02\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
         headers: []
         description: ''
     responseFields: []

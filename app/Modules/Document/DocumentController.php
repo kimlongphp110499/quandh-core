@@ -75,7 +75,7 @@ class DocumentController extends Controller
      *
      * @urlParam document integer required ID văn bản.
      * @apiResource App\Modules\Document\Resources\DocumentResource
-     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields,media
+     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields
      * @apiResourceAdditional success=true
      */
     public function show(Document $document)
@@ -102,7 +102,7 @@ class DocumentController extends Controller
      * @bodyParam status string required active|inactive.
      * @bodyParam attachments[] file Nhiều file đính kèm.
      * @apiResource App\Modules\Document\Resources\DocumentResource status=201
-     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields,media
+     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields
      * @apiResourceAdditional success=true message="Tạo văn bản thành công!"
      */
     public function store(StoreDocumentRequest $request)
@@ -131,7 +131,7 @@ class DocumentController extends Controller
      * @bodyParam attachments[] file Nhiều file đính kèm (append).
      * @bodyParam remove_attachment_ids array Danh sách media id cần xóa.
      * @apiResource App\Modules\Document\Resources\DocumentResource
-     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields,media
+     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields
      * @apiResourceAdditional success=true message="Cập nhật văn bản thành công!"
      */
     public function update(UpdateDocumentRequest $request, Document $document)
@@ -183,7 +183,7 @@ class DocumentController extends Controller
      * @urlParam document integer required ID văn bản. Example: 1
      * @bodyParam status string required Trạng thái mới: active, inactive. Example: active
      * @apiResource App\Modules\Document\Resources\DocumentResource
-     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields,media
+     * @apiResourceModel App\Modules\Document\Models\Document with=issuingAgency,issuingLevel,signer,types,fields
      * @apiResourceAdditional success=true message="Đổi trạng thái văn bản thành công!"
      */
     public function changeStatus(ChangeStatusDocumentRequest $request, Document $document)
