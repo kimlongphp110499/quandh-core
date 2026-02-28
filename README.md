@@ -1,59 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Quandh Core API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Hệ thống backend API xây dựng trên Laravel theo kiến trúc module tại `app/Modules`, phục vụ các nhóm chức năng:
 
-## About Laravel
+- `Auth`: đăng nhập, quên mật khẩu, đặt lại mật khẩu, chuyển tổ chức làm việc.
+- `Core`: người dùng, vai trò, quyền, tổ chức, cấu hình, log hoạt động.
+- `Post`: bài viết và danh mục bài viết.
+- `Document`: văn bản và các danh mục liên quan (lĩnh vực, loại, người ký, cấp/cơ quan ban hành).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Yêu cầu môi trường
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Docker và Docker Compose.
+- PHP 8.2+ (nếu chạy local không qua container).
+- Node.js (nếu chạy frontend asset ngoài container).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Khuyến nghị sử dụng Laravel Sail cho toàn bộ thao tác chạy lệnh trong dự án.
 
-## Learning Laravel
+## Cài đặt nhanh
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1. Cài thư viện:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install
+```
 
-## Laravel Sponsors
+2. Tạo file môi trường:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+cp .env.example .env
+```
 
-### Premium Partners
+3. Khởi động container:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+./vendor/bin/sail up -d
+```
 
-## Contributing
+4. Tạo key ứng dụng và migrate:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate --seed
+```
 
-## Code of Conduct
+5. Cài frontend dependencies:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+./vendor/bin/sail npm install
+```
 
-## Security Vulnerabilities
+## Chạy dự án
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- API + queue + log + Vite:
 
-## License
+```bash
+./vendor/bin/sail composer dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Hoặc chạy riêng:
+
+```bash
+./vendor/bin/sail artisan serve
+./vendor/bin/sail artisan queue:listen --tries=1 --timeout=0
+./vendor/bin/sail npm run dev
+```
+
+## Tài liệu
+
+- API docs: `/docs` (sau khi generate).
+- Tài liệu API dạng markdown: `docs/api`.
+- Thiết kế CSDL: `docs/DATABASE_DESIGN.md`.
+- Thiết kế cấu trúc dự án: `STRUCTURE_DESIGN.md`.
+- Tài liệu phân tích/giải pháp: `docs/answer`.
+
+Sinh lại tài liệu Scribe:
+
+```bash
+./vendor/bin/sail artisan scribe:generate
+```
+
+## Kiểm thử và chất lượng mã
+
+- Chạy test:
+
+```bash
+./vendor/bin/sail artisan test
+```
+
+- Kiểm tra coding style:
+
+```bash
+./vendor/bin/sail pint --test
+```
+
+- Tự động format:
+
+```bash
+./vendor/bin/sail pint
+```
+
+## Ghi chú triển khai
+
+- Tất cả endpoint API nằm dưới `routes/api.php` và route module tại `app/Modules/*/Routes`.
+- Chuẩn response JSON dùng trait `App\Modules\Core\Traits\RespondsWithJson`.
+- Phân quyền dùng Spatie Permission với guard `web`.
