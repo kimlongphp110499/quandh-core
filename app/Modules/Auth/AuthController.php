@@ -8,6 +8,8 @@ use App\Modules\Auth\Requests\LoginRequest;
 use App\Modules\Auth\Requests\ResetPasswordRequest;
 use App\Modules\Auth\Requests\SwitchOrganizationRequest;
 use App\Modules\Auth\Services\AuthService;
+use App\Modules\Auth\Services\CaslAbilityConverter;
+use App\Modules\Core\Resources\UserResource;
 use Illuminate\Http\Request;
 
 /**
@@ -29,7 +31,7 @@ class AuthController extends Controller
      * @bodyParam email string required Email hoặc tên đăng nhập (user_name). Example: admin@example.com
      * @bodyParam password string required Mật khẩu. Example: password
      *
-     * @response 200 {"success": true, "message": "Đăng nhập thành công.", "data": {"access_token": "1|xxx...", "token_type": "Bearer", "user": {"id": 1, "name": "Admin", "email": "admin@example.com", "status": "active"}, "available_organizations": [{"id": 2, "name": "Sở Nội vụ"}], "current_organization_id": 2}}
+     * @response 200 {"success": true, "message": "Đăng nhập thành công.", "data": {"access_token": "1|xxx...", "token_type": "Bearer", "user": {"id": 1, "name": "Admin"}, "available_organizations": [{"id": 2, "name": "Sở Nội vụ"}], "current_organization_id": 2, "roles": ["admin"], "permissions": ["users.index", "users.store"], "abilities": [{"action": "index", "subject": "User"}, {"action": "store", "subject": "User"}]}}
      */
     public function login(LoginRequest $request)
     {
@@ -44,6 +46,27 @@ class AuthController extends Controller
         }
 
         return $this->success($result['data'], 'Đăng nhập thành công.');
+    }
+
+    /**
+     * Lấy thông tin user đăng nhập hiện tại kèm roles và permissions của tổ chức đang chọn.
+     *
+     * Dùng để Vue Casl khởi tạo ability khi refresh trang. Cần header X-Organization-Id (middleware set.permissions.team đã đặt ngữ cảnh).
+     *
+     * @response 200 {"success": true, "data": {"user": {"id": 1, "name": "Admin"}, "roles": ["admin"], "permissions": ["users.index", "users.store"], "abilities": [{"action": "index", "subject": "User"}, {"action": "store", "subject": "User"}]}}
+     */
+    public function me(Request $request)
+    {
+        $user = $request->user();
+        // getAllPermissions() = direct + từ vai trò
+        $permissions = $user->getAllPermissions()->pluck('name')->values()->unique()->all();
+
+        return $this->success([
+            'user' => (new UserResource($user))->resolve(),
+            'roles' => $user->getRoleNames()->values()->all(),
+            'permissions' => $permissions,
+            'abilities' => CaslAbilityConverter::toCaslAbilities($permissions),
+        ]);
     }
 
     /**
@@ -67,7 +90,7 @@ class AuthController extends Controller
      *
      * @bodyParam organization_id integer required ID tổ chức muốn chuyển. Example: 2
      *
-     * @response 200 {"success": true, "message": "Đã chuyển tổ chức làm việc.", "data": {"current_organization_id": 2, "current_organization": {"id": 2, "name": "Sở Nội vụ"}}}
+     * @response 200 {"success": true, "message": "Đã chuyển tổ chức làm việc.", "data": {"current_organization_id": 2, "current_organization": {"id": 2, "name": "Sở Nội vụ"}, "roles": ["admin"], "permissions": ["users.index", "users.store"], "abilities": [{"action": "index", "subject": "User"}, {"action": "store", "subject": "User"}]}}
      */
     public function switchOrganization(SwitchOrganizationRequest $request)
     {

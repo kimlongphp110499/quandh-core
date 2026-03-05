@@ -37,6 +37,8 @@ class AuthService
         $token = $user->createToken('auth_token')->plainTextToken;
         $organizations = $this->getAccessibleOrganizations($user);
         $currentOrganization = $organizations[0] ?? null;
+        $currentOrganizationId = $currentOrganization['id'] ?? null;
+        $rolesAndPermissions = $this->getRolesAndPermissionsForOrganization($user, $currentOrganizationId);
 
         return [
             'ok' => true,
@@ -45,7 +47,10 @@ class AuthService
                 'token_type' => 'Bearer',
                 'user' => (new UserResource($user))->resolve(),
                 'available_organizations' => $organizations,
-                'current_organization_id' => $currentOrganization['id'] ?? null,
+                'current_organization_id' => $currentOrganizationId,
+                'roles' => $rolesAndPermissions['roles'],
+                'permissions' => $rolesAndPermissions['permissions'],
+                'abilities' => $rolesAndPermissions['abilities'],
             ],
         ];
     }
@@ -95,6 +100,8 @@ class AuthService
             ];
         }
 
+        $rolesAndPermissions = $this->getRolesAndPermissionsForOrganization($user, (int) $organization->id);
+
         return [
             'ok' => true,
             'data' => [
@@ -104,6 +111,9 @@ class AuthService
                     'name' => $organization->name,
                     'description' => $organization->description,
                 ],
+                'roles' => $rolesAndPermissions['roles'],
+                'permissions' => $rolesAndPermissions['permissions'],
+                'abilities' => $rolesAndPermissions['abilities'],
             ],
         ];
     }
@@ -159,5 +169,28 @@ class AuthService
     protected function hasOrganizationAccess(int $userId, int $organizationId): bool
     {
         return in_array($organizationId, $this->getAccessibleOrganizationIds($userId), true);
+    }
+
+    /**
+     * Lấy danh sách vai trò và quyền hạn của user trong tổ chức, dùng cho Vue Casl.
+     */
+    protected function getRolesAndPermissionsForOrganization(User $user, ?int $organizationId): array
+    {
+        if ($organizationId === null) {
+            return ['roles' => [], 'permissions' => [], 'abilities' => []];
+        }
+
+        setPermissionsTeamId($organizationId);
+        $user->unsetRelation('roles');
+        $user->unsetRelation('permissions');
+
+        // getAllPermissions() = direct + từ vai trò; getPermissionNames() chỉ direct
+        $permissions = $user->getAllPermissions()->pluck('name')->values()->unique()->all();
+
+        return [
+            'roles' => $user->getRoleNames()->values()->all(),
+            'permissions' => $permissions,
+            'abilities' => CaslAbilityConverter::toCaslAbilities($permissions),
+        ];
     }
 }

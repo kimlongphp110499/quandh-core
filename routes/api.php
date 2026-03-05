@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Auth module - public routes (đăng nhập, quên mật khẩu, đặt lại mật khẩu)
@@ -26,7 +27,7 @@ Route::get('/organizations/public-options', [\App\Modules\Core\OrganizationContr
 
 // Route yêu cầu đăng nhập (Bearer token) và đặt ngữ cảnh team cho Spatie Permission
 Route::middleware(['auth:sanctum', 'set.permissions.team', 'log.activity'])->group(function () {
-    Route::get('/user', fn (\Illuminate\Http\Request $request) => $request->user());
+    Route::get('/user', [AuthController::class, 'me']);
 
     Route::prefix('users')->group(function () {
         require base_path('app/Modules/Core/Routes/user.php');

@@ -1,18 +1,18 @@
-name: 'Core - Permission'
+name: 'Core - Role'
 description: ''
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/permissions/export
+    uri: api/roles/export
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Xuất danh sách permission'
+      title: 'Xuất danh sách role'
       description: 'Áp dụng cùng bộ lọc với index. Trả về file Excel.'
       authenticated: true
       deprecated: false
@@ -134,14 +134,14 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/permissions/import
+    uri: api/roles/import
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Nhập danh sách permission'
+      title: 'Nhập danh sách role'
       description: ''
       authenticated: true
       deprecated: false
@@ -158,7 +158,7 @@ endpoints:
       file:
         custom: []
         name: file
-        description: 'File excel (xlsx, xls, csv). Cột: name, guard_name, description, sort_order, parent_id.'
+        description: 'File excel (xlsx, xls, csv). Cột: name, guard_name, organization_id.'
         required: true
         example: null
         type: file
@@ -173,7 +173,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success": true, "message": "Import quyền thành công."}'
+        content: '{"success": true, "message": "Import vai trò thành công."}'
         headers: []
         description: ''
     responseFields: []
@@ -188,14 +188,14 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/permissions/bulk-delete
+    uri: api/roles/bulk-delete
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Xóa hàng loạt permission'
+      title: 'Xóa hàng loạt role'
       description: ''
       authenticated: true
       deprecated: false
@@ -233,7 +233,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success": true, "message": "Đã xóa thành công các quyền được chọn!"}'
+        content: '{"success": true, "message": "Đã xóa thành công các vai trò được chọn!"}'
         headers: []
         description: ''
     responseFields: []
@@ -248,15 +248,15 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/permissions/stats
+    uri: api/roles/stats
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Thống kê permission'
-      description: 'Tổng số bản ghi sau khi áp dụng bộ lọc.'
+      title: 'Thống kê role'
+      description: 'Tổng số bản ghi (áp dụng cùng bộ lọc với index). Role không có cột status (chuẩn Spatie).'
       authenticated: true
       deprecated: false
     headers:
@@ -270,9 +270,9 @@ endpoints:
       search:
         custom: []
         name: search
-        description: 'Từ khóa tìm kiếm (name, guard_name, description).'
+        description: 'Từ khóa tìm kiếm (name, guard_name).'
         required: false
-        example: posts
+        example: admin
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -345,7 +345,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanQueryParameters:
-      search: posts
+      search: admin
       status: active
       from_date: '2026-02-01'
       to_date: '2026-02-17'
@@ -359,7 +359,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success": true, "data": {"total": 20}}'
+        content: '{"success": true, "data": {"total": 5}}'
         headers: []
         description: ''
     responseFields: []
@@ -374,69 +374,15 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/permissions/tree
+    uri: api/roles
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Cây permission (toàn bộ cây, không phân trang). Để hiển thị nhóm quyền trên frontend.'
-      description: ''
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_ACCESS_TOKEN}'
-      X-Organization-Id: 'ID tổ chức cần làm việc (bắt buộc với endpoint yêu cầu auth). Example: 1'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      parent_id:
-        custom: []
-        name: parent_id
-        description: 'Lọc theo parent_id (null = gốc).'
-        required: false
-        example: null
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      parent_id: null
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success": true, "data": [{"id": 1, "name": "posts", "guard_name": "web", "description": "Quản lý bài viết", "sort_order": 0, "parent_id": null, "children": []}]}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/permissions
-    metadata:
-      custom: []
-      groupName: 'Core - Permission'
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Danh sách permission'
-      description: 'Lấy danh sách có phân trang, lọc và sắp xếp.'
+      title: 'Danh sách role'
+      description: 'Lấy danh sách có phân trang, lọc và sắp xếp. Có kèm organization và permissions.'
       authenticated: true
       deprecated: false
     headers:
@@ -450,9 +396,9 @@ endpoints:
       search:
         custom: []
         name: search
-        description: 'Từ khóa tìm kiếm (name, guard_name, description).'
+        description: 'Từ khóa tìm kiếm (name, guard_name).'
         required: false
-        example: posts
+        example: admin
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -494,9 +440,9 @@ endpoints:
       sort_by:
         custom: []
         name: sort_by
-        description: 'Sắp xếp theo: id, name, guard_name, description, sort_order, parent_id, created_at, updated_at.'
+        description: 'Sắp xếp theo: id, name, guard_name, created_at, updated_at.'
         required: false
-        example: sort_order
+        example: id
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -507,7 +453,7 @@ endpoints:
         name: sort_order
         description: 'Thứ tự: asc, desc.'
         required: false
-        example: asc
+        example: desc
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -525,12 +471,12 @@ endpoints:
         nullable: true
         deprecated: false
     cleanQueryParameters:
-      search: posts
+      search: admin
       status: active
       from_date: '2026-02-01'
       to_date: '2026-02-17'
-      sort_by: sort_order
-      sort_order: asc
+      sort_by: id
+      sort_order: desc
       limit: 10
     bodyParameters: []
     cleanBodyParameters: []
@@ -539,7 +485,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":182,"name":"users.update.4027","guard_name":"web","description":null,"sort_order":95,"parent_id":null,"created_at":"01:31:25 05\/03\/2026","updated_at":"01:31:25 05\/03\/2026"},{"id":183,"name":"documents.index.6955","guard_name":"web","description":null,"sort_order":39,"parent_id":null,"created_at":"01:31:25 05\/03\/2026","updated_at":"01:31:25 05\/03\/2026"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"\/?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"\/","per_page":10,"to":2,"total":2},"success":"true"}'
+        content: '{"data":[{"id":47,"name":"role_ng775","guard_name":"web","organization_id":null,"created_at":"08:54:43 05\/03\/2026","updated_at":"08:54:43 05\/03\/2026"},{"id":48,"name":"role_mi365","guard_name":"web","organization_id":null,"created_at":"08:54:43 05\/03\/2026","updated_at":"08:54:43 05\/03\/2026"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"\/?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"\/","per_page":10,"to":2,"total":2},"success":"true"}'
         headers: []
         description: ''
     responseFields: []
@@ -554,14 +500,14 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/permissions/{permission_id}'
+    uri: 'api/roles/{role_id}'
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Chi tiết permission'
+      title: 'Chi tiết role'
       description: ''
       authenticated: true
       deprecated: false
@@ -571,10 +517,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      permission_id:
+      role_id:
         custom: []
-        name: permission_id
-        description: 'The ID of the permission.'
+        name: role_id
+        description: 'The ID of the role.'
         required: true
         example: 1
         type: integer
@@ -582,10 +528,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      permission:
+      role:
         custom: []
-        name: permission
-        description: 'ID permission.'
+        name: role
+        description: 'ID role.'
         required: true
         example: 1
         type: integer
@@ -594,8 +540,8 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      permission_id: 1
-      permission: 1
+      role_id: 1
+      role: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -605,7 +551,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":185,"name":"users.index.4524","guard_name":"web","description":"Commodi incidunt iure odit.","sort_order":45,"parent_id":184,"parent":{"id":184,"name":"documents.show.967"},"children":[{"id":186,"name":"roles.destroy.1904","guard_name":"web","description":null,"sort_order":93,"parent_id":185,"created_at":"01:31:25 05\/03\/2026","updated_at":"01:31:25 05\/03\/2026"}],"created_at":"01:31:25 05\/03\/2026","updated_at":"01:31:25 05\/03\/2026"},"success":"true"}'
+        content: '{"data":{"id":49,"name":"role_wp680","guard_name":"web","organization_id":154,"organization":{"id":154,"name":"Dare Group"},"permissions":["organizations.index.7602"],"created_at":"08:54:43 05\/03\/2026","updated_at":"08:54:43 05\/03\/2026"},"success":"true"}'
         headers: []
         description: ''
     responseFields: []
@@ -620,14 +566,14 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/permissions
+    uri: api/roles
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Tạo permission mới'
+      title: 'Tạo role mới'
       description: ''
       authenticated: true
       deprecated: false
@@ -644,9 +590,9 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Tên permission.'
+        description: 'Tên role.'
         required: true
-        example: posts.create
+        example: admin
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -663,51 +609,33 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
-      description:
+      permission_ids:
         custom: []
-        name: description
-        description: 'Mô tả hiển thị trên frontend.'
+        name: permission_ids
+        description: 'Danh sách ID permission để sync.'
         required: false
-        example: 'Eius et animi quos velit et.'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      sort_order:
-        custom: []
-        name: sort_order
-        description: 'Thứ tự sắp xếp.'
-        required: false
-        example: 0
-        type: integer
+        example:
+          - 1
+          - 2
+          - 3
+        type: 'string[]'
         enumValues: []
         exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      parent_id:
-        custom: []
-        name: parent_id
-        description: 'ID permission cha (null = gốc/nhóm).'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
     cleanBodyParameters:
-      name: posts.create
+      name: admin
       guard_name: web
-      description: 'Eius et animi quos velit et.'
-      sort_order: 0
-      parent_id: 16
+      permission_ids:
+        - 1
+        - 2
+        - 3
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":187,"name":"roles.index.660","guard_name":"web","description":"Et fugiat sunt nihil accusantium.","sort_order":91,"parent_id":null,"created_at":"01:31:25 05\/03\/2026","updated_at":"01:31:25 05\/03\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c t\u1ea1o th\u00e0nh c\u00f4ng!"}'
+        content: '{"data":{"id":50,"name":"role_zm806","guard_name":"web","organization_id":null,"permissions":["documents.index.5606"],"created_at":"08:54:43 05\/03\/2026","updated_at":"08:54:43 05\/03\/2026"},"success":"true","message":"Vai tr\u00f2 \u0111\u00e3 \u0111\u01b0\u1ee3c t\u1ea1o th\u00e0nh c\u00f4ng!"}'
         headers: []
         description: ''
     responseFields: []
@@ -722,14 +650,14 @@ endpoints:
     custom: []
     httpMethods:
       - PUT
-    uri: 'api/permissions/{permission_id}'
+    uri: 'api/roles/{role_id}'
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Cập nhật permission'
+      title: 'Cập nhật role'
       description: ''
       authenticated: true
       deprecated: false
@@ -739,10 +667,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      permission_id:
+      role_id:
         custom: []
-        name: permission_id
-        description: 'The ID of the permission.'
+        name: role_id
+        description: 'The ID of the role.'
         required: true
         example: 1
         type: integer
@@ -750,10 +678,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      permission:
+      role:
         custom: []
-        name: permission
-        description: 'ID permission.'
+        name: role
+        description: 'ID role.'
         required: true
         example: 1
         type: integer
@@ -762,17 +690,17 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      permission_id: 1
-      permission: 1
+      role_id: 1
+      role: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
       name:
         custom: []
         name: name
-        description: 'Tên permission.'
+        description: 'Tên role.'
         required: false
-        example: posts.update
+        example: editor
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -789,51 +717,31 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
-      description:
+      permission_ids:
         custom: []
-        name: description
-        description: 'Mô tả.'
+        name: permission_ids
+        description: 'Danh sách ID permission để sync (gửi mảng rỗng để bỏ hết).'
         required: false
-        example: 'Eius et animi quos velit et.'
-        type: string
+        example:
+          - 1
+          - 2
+        type: 'string[]'
         enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      sort_order:
-        custom: []
-        name: sort_order
-        description: 'Thứ tự sắp xếp.'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      parent_id:
-        custom: []
-        name: parent_id
-        description: 'ID permission cha (null = gốc).'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
+        exampleWasSpecified: true
+        nullable: false
         deprecated: false
     cleanBodyParameters:
-      name: posts.update
+      name: editor
       guard_name: web
-      description: 'Eius et animi quos velit et.'
-      sort_order: 16
-      parent_id: 16
+      permission_ids:
+        - 1
+        - 2
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":188,"name":"roles.index.4338","guard_name":"web","description":null,"sort_order":7,"parent_id":null,"created_at":"01:31:25 05\/03\/2026","updated_at":"01:31:25 05\/03\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
+        content: '{"data":{"id":51,"name":"role_yv564","guard_name":"web","organization_id":null,"permissions":["users.update.3433"],"created_at":"08:54:43 05\/03\/2026","updated_at":"08:54:43 05\/03\/2026"},"success":"true","message":"Vai tr\u00f2 \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
         headers: []
         description: ''
     responseFields: []
@@ -848,14 +756,14 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/permissions/{permission_id}'
+    uri: 'api/roles/{role_id}'
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Cập nhật permission'
+      title: 'Cập nhật role'
       description: ''
       authenticated: true
       deprecated: false
@@ -865,10 +773,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      permission_id:
+      role_id:
         custom: []
-        name: permission_id
-        description: 'The ID of the permission.'
+        name: role_id
+        description: 'The ID of the role.'
         required: true
         example: 1
         type: integer
@@ -876,10 +784,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      permission:
+      role:
         custom: []
-        name: permission
-        description: 'ID permission.'
+        name: role
+        description: 'ID role.'
         required: true
         example: 1
         type: integer
@@ -888,17 +796,17 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      permission_id: 1
-      permission: 1
+      role_id: 1
+      role: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
       name:
         custom: []
         name: name
-        description: 'Tên permission.'
+        description: 'Tên role.'
         required: false
-        example: posts.update
+        example: editor
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -915,51 +823,31 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
-      description:
+      permission_ids:
         custom: []
-        name: description
-        description: 'Mô tả.'
+        name: permission_ids
+        description: 'Danh sách ID permission để sync (gửi mảng rỗng để bỏ hết).'
         required: false
-        example: 'Eius et animi quos velit et.'
-        type: string
+        example:
+          - 1
+          - 2
+        type: 'string[]'
         enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      sort_order:
-        custom: []
-        name: sort_order
-        description: 'Thứ tự sắp xếp.'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      parent_id:
-        custom: []
-        name: parent_id
-        description: 'ID permission cha (null = gốc).'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
+        exampleWasSpecified: true
+        nullable: false
         deprecated: false
     cleanBodyParameters:
-      name: posts.update
+      name: editor
       guard_name: web
-      description: 'Eius et animi quos velit et.'
-      sort_order: 16
-      parent_id: 16
+      permission_ids:
+        - 1
+        - 2
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":189,"name":"roles.index.3491","guard_name":"web","description":"Sunt nihil accusantium harum mollitia.","sort_order":86,"parent_id":null,"created_at":"01:31:25 05\/03\/2026","updated_at":"01:31:25 05\/03\/2026"},"success":"true","message":"Quy\u1ec1n \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
+        content: '{"data":{"id":52,"name":"role_lj575","guard_name":"web","organization_id":null,"permissions":["roles.destroy.6854"],"created_at":"08:54:44 05\/03\/2026","updated_at":"08:54:44 05\/03\/2026"},"success":"true","message":"Vai tr\u00f2 \u0111\u00e3 \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt!"}'
         headers: []
         description: ''
     responseFields: []
@@ -974,14 +862,14 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/permissions/{permission_id}'
+    uri: 'api/roles/{role_id}'
     metadata:
       custom: []
-      groupName: 'Core - Permission'
+      groupName: 'Core - Role'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Xóa permission'
+      title: 'Xóa role'
       description: ''
       authenticated: true
       deprecated: false
@@ -991,10 +879,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      permission_id:
+      role_id:
         custom: []
-        name: permission_id
-        description: 'The ID of the permission.'
+        name: role_id
+        description: 'The ID of the role.'
         required: true
         example: 1
         type: integer
@@ -1002,10 +890,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      permission:
+      role:
         custom: []
-        name: permission
-        description: 'ID permission.'
+        name: role
+        description: 'ID role.'
         required: true
         example: 1
         type: integer
@@ -1014,8 +902,8 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      permission_id: 1
-      permission: 1
+      role_id: 1
+      role: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1025,7 +913,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success": true, "message": "Quyền đã được xóa!"}'
+        content: '{"success": true, "message": "Vai trò đã được xóa!"}'
         headers: []
         description: ''
     responseFields: []
