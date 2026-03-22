@@ -71,4 +71,16 @@ Route::middleware(['auth:sanctum', 'set.permissions.team', 'log.activity'])->gro
     Route::prefix('settings')->group(function () {
         require base_path('app/Modules/Core/Routes/setting.php');
     });
+
+    // Meeting module
+    Route::prefix('meetings')->group(function () {
+        require base_path('app/Modules/Meeting/Routes/meeting.php');
+        require base_path('app/Modules/Meeting/Routes/agenda.php');
+        require base_path('app/Modules/Meeting/Routes/participant.php');
+        require base_path('app/Modules/Meeting/Routes/meeting_document.php');
+        require base_path('app/Modules/Meeting/Routes/personal_note.php');
+        require base_path('app/Modules/Meeting/Routes/speech_request.php');
+        require base_path('app/Modules/Meeting/Routes/voting.php');
+        require base_path('app/Modules/Meeting/Routes/conclusion.php');
+    });
 });
