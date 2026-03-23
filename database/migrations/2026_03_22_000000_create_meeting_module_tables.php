@@ -59,7 +59,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('file_path');
             $table->string('file_type')->nullable(); // pdf, docx, xlsx, pptx, ...
-            $table->unsignedBigInteger('file_size')->nullable(); // bytes
             $table->string('disk')->default('public');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
