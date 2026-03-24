@@ -2,17 +2,17 @@
 
 namespace App\Modules\Meeting\Services;
 
+use App\Modules\Core\Services\MediaService;
 use App\Modules\Meeting\Models\Meeting;
 use App\Modules\Meeting\Models\MeetingDocument;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class MeetingDocumentService
 {
+    public function __construct(private MediaService $mediaService) {}
     public function index(Meeting $meeting): \Illuminate\Database\Eloquent\Collection
     {
-        return $meeting->documents()->with('uploader')->get();
+        return $meeting->documents()->with(['uploader', 'media'])->get();
     }
 
     /**
@@ -31,28 +31,24 @@ class MeetingDocumentService
             $ids[] = $this->uploadOne($meeting, $file, $customName, $type)->id;
         }
 
-        return MeetingDocument::with('uploader')->whereIn('id', $ids)->get();
+        return MeetingDocument::with(['uploader', 'media'])->whereIn('id', $ids)->get();
     }
 
     private function uploadOne(Meeting $meeting, UploadedFile $file, ?string $customName, ?string $type): MeetingDocument
     {
-        $disk = 'public';
-        $directory = "meetings/{$meeting->id}/documents";
-        $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs($directory, $fileName, $disk);
-
-        return MeetingDocument::create([
+        $doc = MeetingDocument::create([
             'meeting_id' => $meeting->id,
             'name' => $customName ?: $file->getClientOriginalName(),
             'type' => $type,
-            'file_path' => $path,
-            'file_type' => $file->getClientOriginalExtension(),
-            'disk' => $disk,
         ]);
+
+        $this->mediaService->uploadOne($doc, $file, 'file');
+
+        return $doc;
     }
 
     public function destroy(MeetingDocument $document): void
     {
-        $document->delete(); // file vật lý xóa trong Model::booted()
+        $document->delete(); // Spatie tự xóa media đính kèm khi model bị xóa
     }
 }

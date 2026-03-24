@@ -14,8 +14,8 @@ class MeetingDocumentResource extends JsonResource
             'meeting_id' => $this->meeting_id,
             'name' => $this->name,
             'type' => $this->type,
-            'url' => $this->url,
-            'file_type' => $this->file_type,
+            'url' => $this->getFirstMediaUrl('file'),
+            'file_type' => $this->getFirstMedia('file')?->extension,
             'uploaded_by' => $this->whenLoaded('uploader', fn () => $this->uploader?->name),
             'created_at' => $this->created_at?->format('d/m/Y H:i:s'),
         ];

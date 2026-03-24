@@ -57,9 +57,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('meeting_id')->constrained('m_meetings')->cascadeOnDelete();
             $table->string('name');
-            $table->string('file_path');
-            $table->string('file_type')->nullable(); // pdf, docx, xlsx, pptx, ...
-            $table->string('disk')->default('public');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
 
