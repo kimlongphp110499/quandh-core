@@ -96,6 +96,38 @@ class PermissionSeeder extends Seeder
         'settings' => [
             'index', 'show', 'update',
         ],
+        // Meeting - Cuộc họp
+        'meetings' => [
+            'stats', 'index', 'show', 'store', 'update', 'destroy', 'changeStatus', 'bulkDestroy', 'bulkUpdateStatus', 'export', 'import',
+        ],
+        // Meeting - Chương trình họp
+        'meetings.agendas' => [
+            'index', 'store', 'update', 'destroy', 'setCurrent', 'reorder',
+        ],
+        // Meeting - Đại biểu
+        'meetings.participants' => [
+            'index', 'store', 'update', 'destroy', 'checkin', 'bulkDestroy', 'bulkUpdateStatus', 'export', 'import',
+        ],
+        // Meeting - Tài liệu họp
+        'meetings.documents' => [
+            'index', 'store', 'destroy',
+        ],
+        // Meeting - Ghi chú cá nhân
+        'meetings.personalNotes' => [
+            'index', 'upsert', 'destroy',
+        ],
+        // Meeting - Đăng ký phát biểu
+        'meetings.speechRequests' => [
+            'index', 'store', 'updateStatus', 'destroy',
+        ],
+        // Meeting - Biểu quyết
+        'meetings.votings' => [
+            'index', 'store', 'changeStatus', 'submitVote', 'results', 'destroy',
+        ],
+        // Meeting - Kết luận
+        'meetings.conclusions' => [
+            'index', 'store', 'update', 'destroy',
+        ],
     ];
 
     public function run(): void
@@ -145,6 +177,14 @@ class PermissionSeeder extends Seeder
         'document-signers' => 'Người ký',
         'document-fields' => 'Lĩnh vực',
         'settings' => 'Cấu hình hệ thống',
+        'meetings' => 'Cuộc họp',
+        'meetings.agendas' => 'Chương trình họp',
+        'meetings.participants' => 'Đại biểu',
+        'meetings.documents' => 'Tài liệu họp',
+        'meetings.personalNotes' => 'Ghi chú cá nhân',
+        'meetings.speechRequests' => 'Đăng ký phát biểu',
+        'meetings.votings' => 'Biểu quyết',
+        'meetings.conclusions' => 'Kết luận',
     ];
 
     /** Nhãn action (để description). */
@@ -164,6 +204,13 @@ class PermissionSeeder extends Seeder
         'incrementView' => 'Tăng lượt xem',
         'destroyByDate' => 'Xóa theo khoảng thời gian',
         'destroyAll' => 'Xóa toàn bộ',
+        'setCurrent' => 'Đặt mục hiện tại',
+        'reorder' => 'Sắp xếp lại',
+        'checkin' => 'Điểm danh',
+        'upsert' => 'Lưu ghi chú',
+        'updateStatus' => 'Cập nhật trạng thái',
+        'submitVote' => 'Gửi phiếu biểu quyết',
+        'results' => 'Kết quả biểu quyết',
     ];
 
     /** Tạo đầy đủ permission từ danh sách PERMISSIONS (kèm description, sort_order, parent_id). */
