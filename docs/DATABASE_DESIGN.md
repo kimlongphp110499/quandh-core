@@ -24,6 +24,17 @@ Bảng người dùng (Laravel Auth).
 | created_at | timestamp | Yes | null | |
 | updated_at | timestamp | Yes | null | |
 
+### `user_preferences`
+Tuỳ chọn người dùng (quan hệ **1–1** với `users`): lưu tổ chức làm việc gần nhất để lần đăng nhập sau backend trả `current_organization_id` đúng theo DB (nếu còn hợp lệ).
+
+| Cột | Kiểu | Nullable | Mặc định | Ràng buộc / Ghi chú |
+|-----|------|----------|----------|---------------------|
+| id | bigint unsigned | No | — | PK, auto increment |
+| user_id | bigint unsigned | No | — | UNIQUE, FK → users.id (cascade delete) |
+| current_organization_id | bigint unsigned | Yes | null | FK → organizations.id (null on delete org) |
+| created_at | timestamp | Yes | null | |
+| updated_at | timestamp | Yes | null | |
+
 ### `password_reset_tokens`
 Token đặt lại mật khẩu.
 

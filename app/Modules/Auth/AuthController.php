@@ -25,6 +25,7 @@ class AuthController extends Controller
      * Đăng nhập
      *
      * Trả về access_token, thông tin user và danh sách organization user có thể truy cập.
+     * `current_organization_id` lấy từ bảng `user_preferences` nếu còn hợp lệ; nếu user chỉ có đúng một tổ chức thì tự gán và lưu preference; nếu có nhiều tổ chức và chưa có preference hợp lệ thì trả `null` (frontend cần màn chọn tổ chức rồi gọi switch-organization).
      *
      * @unauthenticated
      *
@@ -86,7 +87,7 @@ class AuthController extends Controller
     /**
      * Chuyển tổ chức làm việc
      *
-     * Chọn organization để frontend gắn vào header `X-Organization-Id` cho các request tiếp theo.
+     * Chọn organization để frontend gắn vào header `X-Organization-Id` cho các request tiếp theo. Lưu `current_organization_id` vào bảng `user_preferences` để lần đăng nhập sau tự nhớ (nếu còn hợp lệ).
      *
      * @bodyParam organization_id integer required ID tổ chức muốn chuyển. Example: 2
      *

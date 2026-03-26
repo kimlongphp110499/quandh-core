@@ -36,7 +36,7 @@ app/Modules/
 │   ├── Exports/
 │   ├── Imports/
 │   ├── Middleware/
-│   ├── Models/
+│   ├── Models/  (User, Organization, UserPreference, …)
 │   ├── Requests/
 │   ├── Resources/
 │   ├── Routes/

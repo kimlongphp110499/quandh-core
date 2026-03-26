@@ -6,12 +6,15 @@ use App\Modules\Core\Enums\UserStatusEnum;
 use App\Modules\Core\Models\Organization;
 use App\Modules\Core\Models\User;
 use App\Modules\Core\Resources\UserResource;
+use App\Modules\Core\Services\UserPreferenceService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class AuthService
 {
+    public function __construct(private UserPreferenceService $userPreferenceService) {}
+
     public function login(string $login, string $password): array
     {
         $user = User::where('email', $login)
@@ -36,8 +39,19 @@ class AuthService
 
         $token = $user->createToken('auth_token')->plainTextToken;
         $organizations = $this->getAccessibleOrganizations($user);
-        $currentOrganization = $organizations[0] ?? null;
-        $currentOrganizationId = $currentOrganization['id'] ?? null;
+        $accessibleIds = array_column($organizations, 'id');
+
+        if ($organizations === []) {
+            $this->userPreferenceService->clearCurrentOrganizationId($user);
+            $currentOrganizationId = null;
+        } else {
+            $currentOrganizationId = $this->resolveCurrentOrganizationIdForLogin(
+                $user,
+                $organizations,
+                $accessibleIds
+            );
+        }
+
         $rolesAndPermissions = $this->getRolesAndPermissionsForOrganization($user, $currentOrganizationId);
 
         return [
@@ -101,6 +115,8 @@ class AuthService
         }
 
         $rolesAndPermissions = $this->getRolesAndPermissionsForOrganization($user, (int) $organization->id);
+
+        $this->userPreferenceService->setCurrentOrganizationId($user, (int) $organization->id);
 
         return [
             'ok' => true,
@@ -169,6 +185,31 @@ class AuthService
     protected function hasOrganizationAccess(int $userId, int $organizationId): bool
     {
         return in_array($organizationId, $this->getAccessibleOrganizationIds($userId), true);
+    }
+
+    /**
+     * Xác định tổ chức hiện tại khi đăng nhập: ưu tiên bản ghi user_preferences;
+     * nếu không hợp lệ thì xóa preference; nếu chỉ có một tổ chức thì tự gán và lưu.
+     */
+    protected function resolveCurrentOrganizationIdForLogin(User $user, array $organizations, array $accessibleIds): ?int
+    {
+        $preferredId = $this->userPreferenceService->getCurrentOrganizationId($user);
+
+        if ($preferredId !== null) {
+            if (in_array($preferredId, $accessibleIds, true)) {
+                return $preferredId;
+            }
+            $this->userPreferenceService->clearCurrentOrganizationId($user);
+        }
+
+        if (count($organizations) === 1) {
+            $onlyId = (int) $organizations[0]['id'];
+            $this->userPreferenceService->setCurrentOrganizationId($user, $onlyId);
+
+            return $onlyId;
+        }
+
+        return null;
     }
 
     /**
