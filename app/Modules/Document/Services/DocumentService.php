@@ -7,6 +7,7 @@ use App\Modules\Document\Enums\DocumentStatusEnum;
 use App\Modules\Document\Exports\DocumentsExport;
 use App\Modules\Document\Imports\DocumentsImport;
 use App\Modules\Document\Models\Document;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -35,6 +36,8 @@ class DocumentService
 
     public function show(Document $document): Document
     {
+        $this->ensureBelongsToCurrentOrganization($document);
+
         return $document->load(['issuingAgency', 'issuingLevel', 'signer', 'types', 'fields', 'media', 'creator', 'editor']);
     }
 
@@ -45,6 +48,7 @@ class DocumentService
         try {
             return DB::transaction(function () use ($validated, $attachments, &$storedFiles) {
                 $data = collect($validated)->except(['document_type_ids', 'document_field_ids', 'attachments'])->all();
+                $data['organization_id'] = $this->resolveCurrentOrganizationId();
                 $document = Document::create($data);
 
                 $document->types()->sync($validated['document_type_ids'] ?? []);
@@ -65,6 +69,8 @@ class DocumentService
 
     public function update(Document $document, array $validated, array $attachments = []): Document
     {
+        $this->ensureBelongsToCurrentOrganization($document);
+
         $storedFiles = [];
 
         try {
@@ -99,21 +105,31 @@ class DocumentService
 
     public function destroy(Document $document): void
     {
+        $this->ensureBelongsToCurrentOrganization($document);
+
         $document->delete();
     }
 
     public function bulkDestroy(array $ids): void
     {
-        Document::whereIn('id', $ids)->delete();
+        Document::query()
+            ->where('organization_id', $this->resolveCurrentOrganizationId())
+            ->whereIn('id', $ids)
+            ->delete();
     }
 
     public function bulkUpdateStatus(array $ids, string $status): void
     {
-        Document::whereIn('id', $ids)->update(['status' => $status]);
+        Document::query()
+            ->where('organization_id', $this->resolveCurrentOrganizationId())
+            ->whereIn('id', $ids)
+            ->update(['status' => $status]);
     }
 
     public function changeStatus(Document $document, string $status): Document
     {
+        $this->ensureBelongsToCurrentOrganization($document);
+
         $document->update(['status' => $status]);
 
         return $document->load(['issuingAgency', 'issuingLevel', 'signer', 'types', 'fields', 'media', 'creator', 'editor']);
@@ -126,6 +142,24 @@ class DocumentService
 
     public function import($file): void
     {
-        Excel::import(new DocumentsImport, $file);
+        Excel::import(new DocumentsImport($this->resolveCurrentOrganizationId()), $file);
+    }
+
+    private function resolveCurrentOrganizationId(): int
+    {
+        $organizationId = function_exists('getPermissionsTeamId') ? getPermissionsTeamId() : null;
+
+        if (! is_numeric($organizationId) || (int) $organizationId <= 0) {
+            throw new ModelNotFoundException('Không xác định được tổ chức làm việc hiện tại.');
+        }
+
+        return (int) $organizationId;
+    }
+
+    private function ensureBelongsToCurrentOrganization(Document $document): void
+    {
+        if ((int) $document->organization_id !== $this->resolveCurrentOrganizationId()) {
+            throw (new ModelNotFoundException)->setModel(Document::class, [$document->id]);
+        }
     }
 }

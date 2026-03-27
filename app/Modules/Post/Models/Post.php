@@ -24,12 +24,14 @@ class Post extends Model implements HasMedia
         'content',
         'status',
         'view_count',
+        'organization_id',
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
         'view_count' => 'integer',
+        'organization_id' => 'integer',
     ];
 
     protected static function booted()
@@ -69,7 +71,11 @@ class Post extends Model implements HasMedia
 
     public function scopeFilter($query, array $filters)
     {
-        $query->when($filters['search'] ?? null, function ($query, $search) {
+        $organizationId = function_exists('getPermissionsTeamId') ? getPermissionsTeamId() : null;
+
+        $query->when($organizationId, function ($query, $organizationId) {
+            $query->where('organization_id', (int) $organizationId);
+        })->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('title', 'like', '%'.$search.'%');
         })->when($filters['status'] ?? null, function ($query, $status) {
             $query->where('status', $status);

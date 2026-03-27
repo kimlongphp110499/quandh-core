@@ -7,6 +7,7 @@ use App\Modules\Post\Enums\PostStatusEnum;
 use App\Modules\Post\Exports\PostsExport;
 use App\Modules\Post\Imports\PostsImport;
 use App\Modules\Post\Models\Post;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -35,6 +36,8 @@ class PostService
 
     public function show(Post $post): Post
     {
+        $this->ensureBelongsToCurrentOrganization($post);
+
         return $post->load(['categories', 'media']);
     }
 
@@ -45,6 +48,7 @@ class PostService
         try {
             return DB::transaction(function () use ($validated, $images, &$storedFiles) {
                 $data = collect($validated)->except(['images', 'category_ids'])->all();
+                $data['organization_id'] = $this->resolveCurrentOrganizationId();
                 $post = Post::create($data);
 
                 $this->syncPostCategories($post, $validated);
@@ -60,6 +64,8 @@ class PostService
 
     public function update(Post $post, array $validated, array $images = []): Post
     {
+        $this->ensureBelongsToCurrentOrganization($post);
+
         $storedFiles = [];
 
         try {
@@ -87,17 +93,25 @@ class PostService
 
     public function destroy(Post $post): void
     {
+        $this->ensureBelongsToCurrentOrganization($post);
+
         $post->delete();
     }
 
     public function bulkDestroy(array $ids): void
     {
-        Post::destroy($ids);
+        Post::query()
+            ->where('organization_id', $this->resolveCurrentOrganizationId())
+            ->whereIn('id', $ids)
+            ->delete();
     }
 
     public function bulkUpdateStatus(array $ids, string $status): void
     {
-        Post::whereIn('id', $ids)->update(['status' => $status]);
+        Post::query()
+            ->where('organization_id', $this->resolveCurrentOrganizationId())
+            ->whereIn('id', $ids)
+            ->update(['status' => $status]);
     }
 
     public function export(array $filters): BinaryFileResponse
@@ -107,11 +121,13 @@ class PostService
 
     public function import($file): void
     {
-        Excel::import(new PostsImport, $file);
+        Excel::import(new PostsImport($this->resolveCurrentOrganizationId()), $file);
     }
 
     public function changeStatus(Post $post, string $status): Post
     {
+        $this->ensureBelongsToCurrentOrganization($post);
+
         $post->update(['status' => $status]);
 
         return $post->load(['categories', 'media']);
@@ -119,6 +135,8 @@ class PostService
 
     public function incrementView(Post $post): int
     {
+        $this->ensureBelongsToCurrentOrganization($post);
+
         $post->increment('view_count');
 
         return (int) $post->fresh()->view_count;
@@ -142,5 +160,23 @@ class PostService
     private function cleanupStoredMediaFiles(array $storedFiles): void
     {
         $this->mediaService->cleanupStoredFiles($storedFiles);
+    }
+
+    private function resolveCurrentOrganizationId(): int
+    {
+        $organizationId = function_exists('getPermissionsTeamId') ? getPermissionsTeamId() : null;
+
+        if (! is_numeric($organizationId) || (int) $organizationId <= 0) {
+            throw new ModelNotFoundException('Không xác định được tổ chức làm việc hiện tại.');
+        }
+
+        return (int) $organizationId;
+    }
+
+    private function ensureBelongsToCurrentOrganization(Post $post): void
+    {
+        if ((int) $post->organization_id !== $this->resolveCurrentOrganizationId()) {
+            throw (new ModelNotFoundException)->setModel(Post::class, [$post->id]);
+        }
     }
 }

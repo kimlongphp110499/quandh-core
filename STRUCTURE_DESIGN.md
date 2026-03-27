@@ -84,3 +84,9 @@ Khi thêm module mới hoặc thay đổi cấu trúc lớn, cần cập nhật 
 - `STRUCTURE_DESIGN.md` (file này).
 - `docs/DATABASE_DESIGN.md` nếu có migration mới.
 - `docs/api/*.md` và tài liệu Scribe nếu thay đổi controller/endpoint API.
+
+## 6) Quy ước multi-tenant theo tổ chức
+
+- Các module nghiệp vụ có dữ liệu theo tổ chức (hiện tại: `Post`, `Document`) phải có cột `organization_id` trên bảng chính.
+- Mọi truy vấn CRUD/bulk/index/stats/export/import phải scope theo tổ chức hiện tại được middleware `set.permissions.team` thiết lập từ header `X-Organization-Id`.
+- Không cho phép truy cập chéo tổ chức khi thao tác theo ID; khi không cùng tổ chức phải trả lỗi tương đương không tìm thấy/không có quyền.
