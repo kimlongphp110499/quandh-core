@@ -36,8 +36,6 @@ class PostService
 
     public function show(Post $post): Post
     {
-        $this->ensureBelongsToCurrentOrganization($post);
-
         return $post->load(['categories', 'media']);
     }
 
@@ -64,8 +62,6 @@ class PostService
 
     public function update(Post $post, array $validated, array $images = []): Post
     {
-        $this->ensureBelongsToCurrentOrganization($post);
-
         $storedFiles = [];
 
         try {
@@ -93,8 +89,6 @@ class PostService
 
     public function destroy(Post $post): void
     {
-        $this->ensureBelongsToCurrentOrganization($post);
-
         $post->delete();
     }
 
@@ -126,8 +120,6 @@ class PostService
 
     public function changeStatus(Post $post, string $status): Post
     {
-        $this->ensureBelongsToCurrentOrganization($post);
-
         $post->update(['status' => $status]);
 
         return $post->load(['categories', 'media']);
@@ -135,8 +127,6 @@ class PostService
 
     public function incrementView(Post $post): int
     {
-        $this->ensureBelongsToCurrentOrganization($post);
-
         $post->increment('view_count');
 
         return (int) $post->fresh()->view_count;
@@ -173,10 +163,4 @@ class PostService
         return (int) $organizationId;
     }
 
-    private function ensureBelongsToCurrentOrganization(Post $post): void
-    {
-        if ((int) $post->organization_id !== $this->resolveCurrentOrganizationId()) {
-            throw (new ModelNotFoundException)->setModel(Post::class, [$post->id]);
-        }
-    }
 }

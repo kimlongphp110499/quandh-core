@@ -90,3 +90,4 @@ Khi thêm module mới hoặc thay đổi cấu trúc lớn, cần cập nhật 
 - Các module nghiệp vụ có dữ liệu theo tổ chức (hiện tại: `Post`, `Document`) phải có cột `organization_id` trên bảng chính.
 - Mọi truy vấn CRUD/bulk/index/stats/export/import phải scope theo tổ chức hiện tại được middleware `set.permissions.team` thiết lập từ header `X-Organization-Id`.
 - Không cho phép truy cập chéo tổ chức khi thao tác theo ID; khi không cùng tổ chức phải trả lỗi tương đương không tìm thấy/không có quyền.
+- Middleware dùng chung: `Core/Middleware/EnsureRouteModelsBelongToOrganization.php` để kiểm tra đồng loạt model route (`{post}`, `{document}`, ...) thuộc đúng `organization_id` hiện tại.

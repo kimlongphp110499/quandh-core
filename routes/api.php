@@ -32,7 +32,7 @@ Route::middleware(['auth:sanctum', 'set.permissions.team', 'log.activity'])->gro
     Route::prefix('users')->group(function () {
         require base_path('app/Modules/Core/Routes/user.php');
     });
-    Route::prefix('posts')->group(function () {
+    Route::prefix('posts')->middleware('ensure.route.org')->group(function () {
         require base_path('app/Modules/Post/Routes/post.php');
     });
     Route::prefix('post-categories')->group(function () {
@@ -50,7 +50,7 @@ Route::middleware(['auth:sanctum', 'set.permissions.team', 'log.activity'])->gro
     Route::prefix('log-activities')->group(function () {
         require base_path('app/Modules/Core/Routes/log_activity.php');
     });
-    Route::prefix('documents')->group(function () {
+    Route::prefix('documents')->middleware('ensure.route.org')->group(function () {
         require base_path('app/Modules/Document/Routes/document.php');
     });
     Route::prefix('document-types')->group(function () {

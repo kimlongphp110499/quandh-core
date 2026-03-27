@@ -36,8 +36,6 @@ class DocumentService
 
     public function show(Document $document): Document
     {
-        $this->ensureBelongsToCurrentOrganization($document);
-
         return $document->load(['issuingAgency', 'issuingLevel', 'signer', 'types', 'fields', 'media', 'creator', 'editor']);
     }
 
@@ -69,8 +67,6 @@ class DocumentService
 
     public function update(Document $document, array $validated, array $attachments = []): Document
     {
-        $this->ensureBelongsToCurrentOrganization($document);
-
         $storedFiles = [];
 
         try {
@@ -105,8 +101,6 @@ class DocumentService
 
     public function destroy(Document $document): void
     {
-        $this->ensureBelongsToCurrentOrganization($document);
-
         $document->delete();
     }
 
@@ -128,8 +122,6 @@ class DocumentService
 
     public function changeStatus(Document $document, string $status): Document
     {
-        $this->ensureBelongsToCurrentOrganization($document);
-
         $document->update(['status' => $status]);
 
         return $document->load(['issuingAgency', 'issuingLevel', 'signer', 'types', 'fields', 'media', 'creator', 'editor']);
@@ -156,10 +148,4 @@ class DocumentService
         return (int) $organizationId;
     }
 
-    private function ensureBelongsToCurrentOrganization(Document $document): void
-    {
-        if ((int) $document->organization_id !== $this->resolveCurrentOrganizationId()) {
-            throw (new ModelNotFoundException)->setModel(Document::class, [$document->id]);
-        }
-    }
 }
