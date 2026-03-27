@@ -2,6 +2,7 @@
 
 namespace App\Modules\Meeting\Services;
 
+use App\Modules\Meeting\Events\ParticipantAttendanceChanged;
 use App\Modules\Meeting\Exports\ParticipantsExport;
 use App\Modules\Meeting\Imports\ParticipantsImport;
 use App\Modules\Meeting\Models\Meeting;
@@ -77,8 +78,11 @@ class ParticipantService
         }
 
         $participant->update($data);
+        $participant->load('user');
 
-        return $participant->load('user');
+        broadcast(new ParticipantAttendanceChanged($participant));
+
+        return $participant;
     }
 
     /**
@@ -97,8 +101,11 @@ class ParticipantService
         }
 
         $participant->update($data);
+        $participant->load('user');
 
-        return $participant->load('user');
+        broadcast(new ParticipantAttendanceChanged($participant));
+
+        return $participant;
     }
 
     public function bulkDestroy(Meeting $meeting, array $ids): void
