@@ -71,4 +71,22 @@ Route::middleware(['auth:sanctum', 'set.permissions.team', 'log.activity'])->gro
     Route::prefix('settings')->group(function () {
         require base_path('app/Modules/Core/Routes/setting.php');
     });
+    Route::prefix('task-assignment-departments')->group(function () {
+        require base_path('app/Modules/TaskAssignment/Routes/task_assignment_department.php');
+    });
+    Route::prefix('task-assignment-types')->group(function () {
+        require base_path('app/Modules/TaskAssignment/Routes/task_assignment_type.php');
+    });
+    Route::prefix('task-assignment-item-types')->group(function () {
+        require base_path('app/Modules/TaskAssignment/Routes/task_assignment_item_type.php');
+    });
+    Route::prefix('task-assignment-documents')->group(function () {
+        require base_path('app/Modules/TaskAssignment/Routes/task_assignment_document.php');
+    });
+    Route::prefix('task-assignment-items')->group(function () {
+        require base_path('app/Modules/TaskAssignment/Routes/task_assignment_item.php');
+    });
+    Route::prefix('task-assignment-item-reports')->group(function () {
+        require base_path('app/Modules/TaskAssignment/Routes/task_assignment_item_report.php');
+    });
 });

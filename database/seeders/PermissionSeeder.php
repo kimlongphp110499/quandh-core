@@ -96,6 +96,35 @@ class PermissionSeeder extends Seeder
         'settings' => [
             'index', 'show', 'update',
         ],
+        // TaskAssignment - Phòng ban nội bộ giao việc
+        'task-assignment-departments' => [
+            'stats', 'index', 'show', 'store', 'update', 'destroy',
+            'bulkDestroy', 'bulkUpdateStatus', 'changeStatus', 'export', 'import',
+        ],
+        // TaskAssignment - Loại văn bản giao việc
+        'task-assignment-types' => [
+            'stats', 'index', 'show', 'store', 'update', 'destroy',
+            'bulkDestroy', 'bulkUpdateStatus', 'changeStatus', 'export', 'import',
+        ],
+        // TaskAssignment - Văn bản giao việc
+        'task-assignment-documents' => [
+            'stats', 'index', 'show', 'store', 'update', 'destroy',
+            'bulkDestroy', 'bulkUpdateStatus', 'changeStatus', 'export', 'import',
+        ],
+        // TaskAssignment - Loại công việc
+        'task-assignment-item-types' => [
+            'stats', 'index', 'show', 'store', 'update', 'destroy',
+            'bulkDestroy', 'bulkUpdateStatus', 'changeStatus', 'export', 'import',
+        ],
+        // TaskAssignment - Công việc
+        'task-assignment-items' => [
+            'stats', 'index', 'show', 'store', 'update', 'destroy',
+            'bulkDestroy', 'bulkUpdateStatus', 'changeStatus', 'export', 'import',
+        ],
+        // TaskAssignment - Báo cáo công việc
+        'task-assignment-item-reports' => [
+            'index', 'show', 'store', 'update', 'destroy', 'bulkDestroy',
+        ],
     ];
 
     public function run(): void
@@ -145,6 +174,12 @@ class PermissionSeeder extends Seeder
         'document-signers' => 'Người ký',
         'document-fields' => 'Lĩnh vực',
         'settings' => 'Cấu hình hệ thống',
+        'task-assignment-departments' => 'Phòng ban giao việc',
+        'task-assignment-types' => 'Loại văn bản giao việc',
+        'task-assignment-documents' => 'Văn bản giao việc',
+        'task-assignment-item-types' => 'Loại công việc',
+        'task-assignment-items' => 'Công việc',
+        'task-assignment-item-reports' => 'Báo cáo công việc',
     ];
 
     /** Nhãn action (để description). */
