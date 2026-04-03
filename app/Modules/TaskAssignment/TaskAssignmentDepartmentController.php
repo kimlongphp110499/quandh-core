@@ -17,8 +17,9 @@ use App\Modules\TaskAssignment\Services\TaskAssignmentDepartmentService;
 
 /**
  * @group TaskAssignment - Phòng ban
+ * @header X-Organization-Id ID tổ chức cần làm việc (bắt buộc với endpoint yêu cầu auth). Example: 1
  *
- * Quản lý danh mục phòng ban nội bộ module giao việc
+ * Quản lý danh mục phòng ban nội bộ module giao việc: thống kê, danh sách, chi tiết, tạo, cập nhật, xóa, thao tác hàng loạt, xuất/nhập và đổi trạng thái.
  */
 class TaskAssignmentDepartmentController extends Controller
 {
@@ -26,6 +27,13 @@ class TaskAssignmentDepartmentController extends Controller
 
     /**
      * Thống kê phòng ban
+     *
+     * Trả về tổng số phòng ban và phân loại theo trạng thái.
+     *
+     * @queryParam search string Từ khóa tìm kiếm theo tên hoặc mã phòng ban.
+     * @queryParam status string Lọc theo trạng thái: active, inactive.
+     * @queryParam from_date date Lọc từ ngày tạo (Y-m-d). Example: 2026-01-01
+     * @queryParam to_date date Lọc đến ngày tạo (Y-m-d). Example: 2026-12-31
      *
      * @response 200 {"success": true, "data": {"total": 5, "active": 4, "inactive": 1}}
      */
@@ -36,6 +44,22 @@ class TaskAssignmentDepartmentController extends Controller
 
     /**
      * Danh sách phòng ban
+     *
+     * Trả về danh sách phòng ban có phân trang, hỗ trợ tìm kiếm và lọc theo trạng thái.
+     *
+     * @queryParam search string Từ khóa tìm kiếm theo tên hoặc mã phòng ban.
+     * @queryParam status string Lọc theo trạng thái: active, inactive.
+     * @queryParam from_date date Lọc từ ngày tạo (Y-m-d). Example: 2026-01-01
+     * @queryParam to_date date Lọc đến ngày tạo (Y-m-d). Example: 2026-12-31
+     * @queryParam sort_by string Sắp xếp theo: id, code, name, sort_order, created_at, updated_at. Example: sort_order
+     * @queryParam sort_order string Thứ tự sắp xếp: asc, desc. Example: asc
+     * @queryParam limit integer Số bản ghi mỗi trang (1-100). Example: 15
+     *
+     * @apiResourceCollection App\Modules\TaskAssignment\Resources\TaskAssignmentDepartmentCollection
+     *
+     * @apiResourceModel App\Modules\TaskAssignment\Models\TaskAssignmentDepartment paginate=15
+     *
+     * @apiResourceAdditional success=true
      */
     public function index(FilterRequest $request)
     {
@@ -48,6 +72,12 @@ class TaskAssignmentDepartmentController extends Controller
      * Chi tiết phòng ban
      *
      * @urlParam taskAssignmentDepartment integer required ID phòng ban. Example: 1
+     *
+     * @apiResource App\Modules\TaskAssignment\Resources\TaskAssignmentDepartmentResource
+     *
+     * @apiResourceModel App\Modules\TaskAssignment\Models\TaskAssignmentDepartment
+     *
+     * @apiResourceAdditional success=true
      */
     public function show(TaskAssignmentDepartment $taskAssignmentDepartment)
     {
@@ -56,6 +86,18 @@ class TaskAssignmentDepartmentController extends Controller
 
     /**
      * Tạo phòng ban mới
+     *
+     * @bodyParam code string required Mã phòng ban (duy nhất, tối đa 50 ký tự). Example: PB001
+     * @bodyParam name string required Tên phòng ban (tối đa 255 ký tự). Example: Phòng Kế hoạch
+     * @bodyParam description string Mô tả phòng ban.
+     * @bodyParam status string Trạng thái: active, inactive (mặc định active). Example: active
+     * @bodyParam sort_order integer Thứ tự hiển thị (số nguyên không âm). Example: 1
+     *
+     * @apiResource App\Modules\TaskAssignment\Resources\TaskAssignmentDepartmentResource status=201
+     *
+     * @apiResourceModel App\Modules\TaskAssignment\Models\TaskAssignmentDepartment
+     *
+     * @apiResourceAdditional success=true message="Phòng ban đã được tạo thành công!"
      */
     public function store(StoreTaskAssignmentDepartmentRequest $request)
     {
@@ -68,6 +110,18 @@ class TaskAssignmentDepartmentController extends Controller
      * Cập nhật phòng ban
      *
      * @urlParam taskAssignmentDepartment integer required ID phòng ban. Example: 1
+     *
+     * @bodyParam code string Mã phòng ban (duy nhất, tối đa 50 ký tự). Example: PB001
+     * @bodyParam name string Tên phòng ban (tối đa 255 ký tự). Example: Phòng Kế hoạch
+     * @bodyParam description string Mô tả phòng ban.
+     * @bodyParam status string Trạng thái: active, inactive. Example: active
+     * @bodyParam sort_order integer Thứ tự hiển thị (số nguyên không âm). Example: 1
+     *
+     * @apiResource App\Modules\TaskAssignment\Resources\TaskAssignmentDepartmentResource
+     *
+     * @apiResourceModel App\Modules\TaskAssignment\Models\TaskAssignmentDepartment
+     *
+     * @apiResourceAdditional success=true message="Phòng ban đã được cập nhật!"
      */
     public function update(UpdateTaskAssignmentDepartmentRequest $request, TaskAssignmentDepartment $taskAssignmentDepartment)
     {
@@ -80,6 +134,8 @@ class TaskAssignmentDepartmentController extends Controller
      * Xóa phòng ban
      *
      * @urlParam taskAssignmentDepartment integer required ID phòng ban. Example: 1
+     *
+     * @response 200 {"success": true, "message": "Phòng ban đã được xóa thành công!"}
      */
     public function destroy(TaskAssignmentDepartment $taskAssignmentDepartment)
     {
@@ -90,6 +146,11 @@ class TaskAssignmentDepartmentController extends Controller
 
     /**
      * Xóa hàng loạt phòng ban
+     *
+     * @bodyParam ids array required Danh sách ID phòng ban cần xóa. Example: [1,2,3]
+     * @bodyParam ids[] integer required ID phòng ban. Example: 1
+     *
+     * @response 200 {"success": true, "message": "Đã xóa thành công các phòng ban được chọn!"}
      */
     public function bulkDestroy(BulkDestroyTaskAssignmentDepartmentRequest $request)
     {
@@ -100,6 +161,12 @@ class TaskAssignmentDepartmentController extends Controller
 
     /**
      * Cập nhật trạng thái hàng loạt phòng ban
+     *
+     * @bodyParam ids array required Danh sách ID phòng ban. Example: [1,2,3]
+     * @bodyParam ids[] integer required ID phòng ban. Example: 1
+     * @bodyParam status string required Trạng thái mới: active, inactive. Example: inactive
+     *
+     * @response 200 {"success": true, "message": "Cập nhật trạng thái thành công!"}
      */
     public function bulkUpdateStatus(BulkUpdateStatusTaskAssignmentDepartmentRequest $request)
     {
@@ -112,6 +179,14 @@ class TaskAssignmentDepartmentController extends Controller
      * Thay đổi trạng thái phòng ban
      *
      * @urlParam taskAssignmentDepartment integer required ID phòng ban. Example: 1
+     *
+     * @bodyParam status string required Trạng thái mới: active, inactive. Example: active
+     *
+     * @apiResource App\Modules\TaskAssignment\Resources\TaskAssignmentDepartmentResource
+     *
+     * @apiResourceModel App\Modules\TaskAssignment\Models\TaskAssignmentDepartment
+     *
+     * @apiResourceAdditional success=true message="Cập nhật trạng thái thành công!"
      */
     public function changeStatus(ChangeStatusTaskAssignmentDepartmentRequest $request, TaskAssignmentDepartment $taskAssignmentDepartment)
     {
@@ -121,7 +196,14 @@ class TaskAssignmentDepartmentController extends Controller
     }
 
     /**
-     * Xuất danh sách phòng ban
+     * Xuất Excel danh sách phòng ban
+     *
+     * Xuất ra các trường: id, code, name, description, status, sort_order, created_by, updated_by, created_at, updated_at.
+     *
+     * @queryParam search string Từ khóa tìm kiếm theo tên hoặc mã.
+     * @queryParam status string Lọc theo trạng thái: active, inactive.
+     * @queryParam from_date date Lọc từ ngày tạo (Y-m-d). Example: 2026-01-01
+     * @queryParam to_date date Lọc đến ngày tạo (Y-m-d). Example: 2026-12-31
      */
     public function export(FilterRequest $request)
     {
@@ -129,7 +211,13 @@ class TaskAssignmentDepartmentController extends Controller
     }
 
     /**
-     * Nhập danh sách phòng ban
+     * Import phòng ban từ Excel
+     *
+     * Cột bắt buộc: code, name. Cột không bắt buộc: description, status (mặc định "active"), sort_order.
+     *
+     * @bodyParam file file required File Excel (xlsx, xls, csv). Cột theo chuẩn export.
+     *
+     * @response 200 {"success": true, "message": "Import phòng ban thành công."}
      */
     public function import(ImportTaskAssignmentDepartmentRequest $request)
     {
