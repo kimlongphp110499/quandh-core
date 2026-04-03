@@ -5,9 +5,13 @@ namespace App\Modules\TaskAssignment\Models;
 use App\Modules\Core\Models\User;
 use App\Modules\TaskAssignment\Enums\TaskAssignmentDocumentStatusEnum;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class TaskAssignmentDocument extends Model
+class TaskAssignmentDocument extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     protected $fillable = [
         'name',
         'summary',

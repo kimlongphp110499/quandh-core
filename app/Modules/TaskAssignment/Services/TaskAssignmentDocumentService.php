@@ -111,8 +111,13 @@ class TaskAssignmentDocumentService
         try {
             DB::transaction(function () use ($document, $files, &$storedFiles) {
                 foreach ($files as $file) {
-                    $media = $this->mediaService->upload($file, 'task-assignment-document-attachments');
-                    $storedFiles[] = $media;
+                    $media = $this->mediaService->uploadOne($document, $file, 'task-assignment-document-attachments');
+
+                    // Lưu lại để cleanup nếu transaction rollback
+                    $storedFiles[] = [
+                        'disk' => $media->disk,
+                        'path' => $media->getPathRelativeToRoot(),
+                    ];
 
                     $maxSort = $document->attachments()->max('sort_order') ?? 0;
 
