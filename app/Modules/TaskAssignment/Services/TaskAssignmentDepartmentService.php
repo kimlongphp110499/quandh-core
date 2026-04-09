@@ -3,6 +3,7 @@
 namespace App\Modules\TaskAssignment\Services;
 
 use App\Modules\TaskAssignment\Exports\TaskAssignmentDepartmentsExport;
+use App\Modules\TaskAssignment\Exports\TaskAssignmentDepartmentsTemplateExport;
 use App\Modules\TaskAssignment\Imports\TaskAssignmentDepartmentsImport;
 use App\Modules\TaskAssignment\Models\TaskAssignmentDepartment;
 use Maatwebsite\Excel\Facades\Excel;
@@ -73,5 +74,13 @@ class TaskAssignmentDepartmentService
     public function import($file): void
     {
         Excel::import(new TaskAssignmentDepartmentsImport, $file);
+    }
+
+    /**
+     * Tải file Excel mẫu để người dùng điền dữ liệu phòng ban trước khi import.
+     */
+    public function downloadTemplate(): BinaryFileResponse
+    {
+        return Excel::download(new TaskAssignmentDepartmentsTemplateExport, 'mau-import-phong-ban.xlsx');
     }
 }

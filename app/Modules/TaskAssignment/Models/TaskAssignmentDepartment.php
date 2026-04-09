@@ -45,7 +45,13 @@ class TaskAssignmentDepartment extends Model
                 $q->where('name', 'like', '%'.$search.'%')
                     ->orWhere('code', 'like', '%'.$search.'%');
             });
-        })->when($filters['status'] ?? null, function ($query, $status) {
+        })->when($filters['from_date'] ?? null, function ($query, $fromDate) {
+            $query->whereDate('created_at', '>=', $fromDate);
+        })
+        ->when($filters['to_date'] ?? null, function ($query, $toDate) {
+            $query->whereDate('created_at', '<=', $toDate);
+        })
+        ->when($filters['status'] ?? null, function ($query, $status) {
             $query->where('status', $status);
         })->when($filters['sort_by'] ?? 'sort_order', function ($query, $sortBy) use ($filters) {
             $allowed = ['id', 'name', 'code', 'sort_order', 'created_at'];

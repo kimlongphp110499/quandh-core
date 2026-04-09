@@ -211,6 +211,21 @@ class TaskAssignmentDepartmentController extends Controller
     }
 
     /**
+     * Tải file mẫu import phòng ban
+     *
+     * Trả về file Excel mẫu gồm tiêu đề cột và dữ liệu ví dụ.
+     * Người dùng tải về, điền dữ liệu phòng ban vào rồi upload qua API import.
+     * Cột bắt buộc: Mã phòng ban, Tên phòng ban.
+     * Cột không bắt buộc: Mô tả, Trạng thái (active/inactive), Thứ tự sắp xếp.
+     *
+     * @response file Trả về file Excel mẫu (mau-import-phong-ban.xlsx)
+     */
+    public function downloadTemplate()
+    {
+        return $this->service->downloadTemplate();
+    }
+
+    /**
      * Import phòng ban từ Excel
      *
      * Cột bắt buộc: code, name. Cột không bắt buộc: description, status (mặc định "active"), sort_order.
@@ -221,8 +236,12 @@ class TaskAssignmentDepartmentController extends Controller
      */
     public function import(ImportTaskAssignmentDepartmentRequest $request)
     {
-        $this->service->import($request->file('file'));
+        $result = $this->service->import($request->file('file'));
 
-        return $this->success(null, 'Import phòng ban thành công.');
+        if (! empty($result['errors'])) {
+            return $this->success($result, 'Import hoàn tất nhưng có một số dòng lỗi.');
+        }
+
+        return $this->success($result, 'Import phòng ban thành công.');
     }
 }
