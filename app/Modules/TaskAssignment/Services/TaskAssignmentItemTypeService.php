@@ -3,6 +3,7 @@
 namespace App\Modules\TaskAssignment\Services;
 
 use App\Modules\TaskAssignment\Exports\TaskAssignmentItemTypesExport;
+use App\Modules\TaskAssignment\Exports\TaskAssignmentItemTypesTemplateExport;
 use App\Modules\TaskAssignment\Imports\TaskAssignmentItemTypesImport;
 use App\Modules\TaskAssignment\Models\TaskAssignmentItemType;
 use Maatwebsite\Excel\Facades\Excel;
@@ -73,5 +74,9 @@ class TaskAssignmentItemTypeService
     public function import($file): void
     {
         Excel::import(new TaskAssignmentItemTypesImport, $file);
+    }
+    public function downloadTemplate(): BinaryFileResponse
+    {
+        return Excel::download(new TaskAssignmentItemTypesTemplateExport, 'task-assignment-item-types-template.xlsx');
     }
 }

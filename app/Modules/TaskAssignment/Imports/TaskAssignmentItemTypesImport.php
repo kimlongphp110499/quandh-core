@@ -11,9 +11,9 @@ class TaskAssignmentItemTypesImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new TaskAssignmentItemType([
-            'name' => $row['ten_loai_cong_viec'] ?? $row['name'] ?? null,
-            'description' => $row['mo_ta'] ?? $row['description'] ?? null,
-            'status' => $row['trang_thai'] ?? $row['status'] ?? 'active',
+            'name' => $row['Tên loại công việc'] ?? $row['name'] ?? null,
+            'description' => $row['Mô tả'] ?? $row['description'] ?? null,
+            'status' => $row['Trạng thái (active/inactive)'] ?? $row['status'] ?? 'active',
         ]);
     }
 }

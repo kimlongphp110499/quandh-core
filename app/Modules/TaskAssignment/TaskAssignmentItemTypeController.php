@@ -207,6 +207,20 @@ class TaskAssignmentItemTypeController extends Controller
     }
 
     /**
+     * Tải file mẫu import loại công việc
+     *
+     * Trả về file Excel mẫu gồm tiêu đề cột và dữ liệu ví dụ.
+     * Cột bắt buộc: Tên loại công việc.
+     * Cột không bắt buộc: Mô tả, Trạng thái (active/inactive).
+     *
+     * @response file Trả về file Excel mẫu (mau-import-loai-cong-viec.xlsx)
+     */
+    public function downloadTemplate()
+    {
+        return $this->service->downloadTemplate();
+    }
+
+    /**
      * Import loại công việc từ Excel
      *
      * Cột bắt buộc: name. Cột không bắt buộc: description, status (mặc định "active").
