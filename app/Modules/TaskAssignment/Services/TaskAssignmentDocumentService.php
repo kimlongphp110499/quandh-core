@@ -12,6 +12,7 @@ use App\Modules\Core\Services\MediaService;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Modules\TaskAssignment\Exports\TaskAssignmentDocumentsTemplateExport;
 
 class TaskAssignmentDocumentService
 {
@@ -152,5 +153,13 @@ class TaskAssignmentDocumentService
                     ->update(['sort_order' => $index + 1]);
             }
         });
+    }
+
+    /**
+     * Tải file Excel mẫu để người dùng điền dữ liệu trước khi import.
+     */
+    public function downloadTemplate(): BinaryFileResponse
+    {
+        return Excel::download(new TaskAssignmentDocumentsTemplateExport, 'mau-import-van-ban-giao-viec.xlsx');
     }
 }

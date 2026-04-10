@@ -291,4 +291,18 @@ class TaskAssignmentDocumentController extends Controller
 
         return $this->success(null, 'Cập nhật thứ tự tệp đính kèm thành công!');
     }
+
+    /**
+     * Tải file mẫu import văn bản giao việc
+     *
+     * Trả về file Excel mẫu gồm tiêu đề cột và dữ liệu ví dụ.
+     * Người dùng tải về, điền dữ liệu văn bản giao việc vào rồi upload qua API import.
+     * Cột bắt buộc: Tên văn bản (name). Cột tùy chọn: Tóm tắt (summary), Ngày ban hành (issue_date), Loại văn bản (task_assignment_type_id), Trạng thái (status).
+     *
+     * @response file Trả về file Excel mẫu (mau-import-van-ban-giao-viec.xlsx)
+     */
+    public function downloadTemplate()
+    {
+        return $this->service->downloadTemplate();
+    }
 }

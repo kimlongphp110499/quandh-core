@@ -70,12 +70,6 @@ class TaskAssignmentItemTypesTemplateExport implements FromArray, WithHeadings, 
             'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFBFBFBF']]],
         ]);
 
-        // Hàng 2-3: dữ liệu mẫu — nền xanh nhạt
-        $sheet->getStyle('A2:C3')->applyFromArray([
-            'fill'    => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFDCE6F1']],
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFBFBFBF']]],
-        ]);
-
         // Ghi chú hướng dẫn ở ô D1
         $sheet->setCellValue('D1', '(*) Bắt buộc. Trạng thái nhập: active hoặc inactive. Xóa các dòng mẫu và điền dữ liệu thực từ hàng 2.');
         $sheet->getStyle('D1')->applyFromArray([

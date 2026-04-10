@@ -3,26 +3,29 @@
 namespace App\Modules\TaskAssignment\Exports;
 
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 /**
- * Export file mẫu để người dùng tải về và điền dữ liệu phòng ban trước khi import.
+ * Export file mẫu để người dùng tải về và điền dữ liệu văn bản giao việc trước khi import.
  *
  * Cấu trúc file:
- *   - Hàng 1: Tên cột thân thiện (hiển thị cho người dùng đọc)
- *   - Hàng 2: Key kỹ thuật dùng khi import — KHÔNG xóa hàng này
- *   - Hàng 3+: Dữ liệu mẫu minh hoạ (có thể xóa hoặc ghi đè)
+ *   - Hàng 1: Tên cột (WithHeadingRow sẽ normalize thành key để map trong Import class)
+ *   - Hàng 2+: Dữ liệu mẫu minh hoạ (có thể xóa hoặc ghi đè)
  *
- * Import class đọc hàng 2 làm heading row (WithHeadingRow) để lấy key.
+ * Mapping key sau normalize:
+ *   "name"        → $row['name']
+ *   "loai_van_ban" → $row['loai_van_ban']  (tên loại, hệ thống tự map sang ID)
+ *   "ngay_ban_hanh" → $row['ngay_ban_hanh'] (định dạng d/m/Y)
+ *   "tom_tat"     → $row['tom_tat']
  */
-class TaskAssignmentDepartmentsTemplateExport implements FromArray, WithHeadings, WithStyles, WithColumnWidths, WithTitle
+class TaskAssignmentDocumentsTemplateExport implements FromArray, WithHeadings, WithStyles, WithColumnWidths, WithTitle
 {
     /**
      * Dữ liệu mẫu minh hoạ — người dùng có thể xóa hoặc ghi đè.
@@ -30,27 +33,27 @@ class TaskAssignmentDepartmentsTemplateExport implements FromArray, WithHeadings
     public function array(): array
     {
         return [
-            ['PB001', 'Phòng Kế hoạch', 'Phụ trách lập kế hoạch công tác', 'active', 1],
-            ['PB002', 'Phòng Tổ chức', 'Phụ trách công tác tổ chức nhân sự', 'active', 2],
+            ['Văn bản giao việc mẫu 1', '1', now()->format('Y/m/d'), 'Đây là tóm tắt nội dung văn bản giao việc mẫu.', 'draft'],
+            ['Văn bản giao việc mẫu 2', '2', now()->format('Y/m/d'), 'Đây là tóm tắt nội dung văn bản giao việc mẫu.', 'issued'],
         ];
     }
 
     /**
      * Hàng tiêu đề — WithHeadingRow sẽ normalize thành key để map trong Import class.
-     * "Mã phòng ban (*)"            → ma_phong_ban
-     * "Tên phòng ban (*)"           → ten_phong_ban
-     * "Mô tả"                       → mo_ta
-     * "Trạng thái (active/inactive)"→ trang_thai_active_inactive
-     * "Thứ tự sắp xếp"              → thu_tu_sap_xep
+     * "name"
+     * "task_assignment_type_id"
+     * "issue_date"
+     * "summary"
+     * "status"
      */
     public function headings(): array
     {
         return [
-            'code',
             'name',
-            'description',
+            'task_assignment_type_id',
+            'issue_date',
+            'summary',
             'status',
-            'sort_order',
         ];
     }
 
@@ -59,7 +62,7 @@ class TaskAssignmentDepartmentsTemplateExport implements FromArray, WithHeadings
      */
     public function title(): string
     {
-        return 'Danh sách phòng ban';
+        return 'Danh sách văn bản giao việc';
     }
 
     /**
@@ -76,11 +79,11 @@ class TaskAssignmentDepartmentsTemplateExport implements FromArray, WithHeadings
         ]);
 
         // Ghi chú hướng dẫn ở ô F1
-        $sheet->setCellValue('F1', '(*) Bắt buộc. Trạng thái nhập: active hoặc inactive. Xóa các dòng mẫu và điền dữ liệu thực từ hàng 2.');
+        $sheet->setCellValue('F1', '(*) name là bắt buộc. Xóa các dòng mẫu và điền dữ liệu thực từ hàng 2.');
         $sheet->getStyle('F1')->applyFromArray([
             'font' => ['color' => ['argb' => 'FFFF0000'], 'bold' => true, 'size' => 10],
         ]);
-        $sheet->getColumnDimension('F')->setWidth(70);
+        $sheet->getColumnDimension('F')->setWidth(80);
 
         return [];
     }
@@ -91,11 +94,10 @@ class TaskAssignmentDepartmentsTemplateExport implements FromArray, WithHeadings
     public function columnWidths(): array
     {
         return [
-            'A' => 22,
-            'B' => 35,
-            'C' => 45,
-            'D' => 30,
-            'E' => 22,
+            'A' => 40,
+            'B' => 30,
+            'C' => 25,
+            'D' => 50,
         ];
     }
 }

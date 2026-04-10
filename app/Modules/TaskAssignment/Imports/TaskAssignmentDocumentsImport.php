@@ -12,9 +12,9 @@ class TaskAssignmentDocumentsImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         $typeId = null;
-        if (! empty($row['loai_van_ban']) || ! empty($row['task_assignment_type'])) {
-            $typeName = $row['loai_van_ban'] ?? $row['task_assignment_type'];
-            $type = TaskAssignmentType::where('name', $typeName)->first();
+         if (! empty($row['task_assignment_type_id']) && is_numeric($row['task_assignment_type_id'])) {
+            $typeId = $row['task_assignment_type_id'];
+            $type = TaskAssignmentType::where('id', $typeId)->first();
             $typeId = $type?->id;
         }
 
@@ -23,7 +23,7 @@ class TaskAssignmentDocumentsImport implements ToModel, WithHeadingRow
             'summary' => $row['tom_tat'] ?? $row['summary'] ?? null,
             'issue_date' => $row['ngay_ban_hanh'] ?? $row['issue_date'] ?? null,
             'task_assignment_type_id' => $typeId,
-            'status' => 'draft',
+            'status' => $row['status'] ?? null,
         ]);
     }
 }
