@@ -221,4 +221,17 @@ class TaskAssignmentTypeController extends Controller
 
         return $this->success(null, 'Import loại văn bản thành công.');
     }
+
+    /**
+     * Tải file mẫu import loại văn bản
+     *
+     * Trả về file Excel mẫu gồm tiêu đề cột và dữ liệu ví dụ.
+     * Cột bắt buộc: name. Cột không bắt buộc: description, status (mặc định "active").
+     *
+     * @response file Trả về file Excel mẫu (mau-import-loai-van-ban.xlsx)
+     */
+    public function downloadTemplate()
+    {
+        return $this->service->downloadTemplate();
+    }
 }

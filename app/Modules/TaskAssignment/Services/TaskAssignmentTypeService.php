@@ -7,6 +7,7 @@ use App\Modules\TaskAssignment\Imports\TaskAssignmentTypesImport;
 use App\Modules\TaskAssignment\Models\TaskAssignmentType;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Modules\TaskAssignment\Exports\TaskAssignmentTypesTemplateExport;
 
 class TaskAssignmentTypeService
 {
@@ -73,5 +74,10 @@ class TaskAssignmentTypeService
     public function import($file): void
     {
         Excel::import(new TaskAssignmentTypesImport, $file);
+    }
+
+    public function downloadTemplate(): BinaryFileResponse
+    {
+        return Excel::download(new TaskAssignmentTypesTemplateExport, 'mau-import-loai-ban-ban.xlsx');
     }
 }
