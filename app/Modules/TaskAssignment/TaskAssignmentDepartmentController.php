@@ -17,7 +17,6 @@ use App\Modules\TaskAssignment\Services\TaskAssignmentDepartmentService;
 
 /**
  * @group TaskAssignment - Phòng ban
- * @header X-Organization-Id ID tổ chức cần làm việc (bắt buộc với endpoint yêu cầu auth). Example: 1
  *
  * Quản lý danh mục phòng ban nội bộ module giao việc: thống kê, danh sách, chi tiết, tạo, cập nhật, xóa, thao tác hàng loạt, xuất/nhập và đổi trạng thái.
  */

@@ -17,7 +17,6 @@ use App\Modules\TaskAssignment\Services\TaskAssignmentItemService;
 
 /**
  * @group TaskAssignment - Công việc
- * @header X-Organization-Id ID tổ chức cần làm việc (bắt buộc với endpoint yêu cầu auth). Example: 1
  *
  * Quản lý công việc thuộc văn bản giao việc: thống kê, danh sách, chi tiết, tạo, cập nhật, xóa, thao tác hàng loạt, xuất/nhập, đổi trạng thái và các thống kê nâng cao theo phòng ban, người dùng, thời gian.
  */
@@ -268,6 +267,20 @@ class TaskAssignmentItemController extends Controller
         $this->service->import($request->file('file'));
 
         return $this->success(null, 'Import công việc thành công.');
+    }
+
+    /**
+     * Tải file mẫu import công việc
+     *
+     * Trả về file Excel mẫu gồm tiêu đề cột và dữ liệu ví dụ.
+     * Người dùng tải về, điền dữ liệu công việc vào rồi upload qua API import.
+     * Cột bắt buộc: .
+     *
+     * @response file Trả về file Excel mẫu (mau-import-cong-viec.xlsx)
+     */
+    public function downloadTemplate()
+    {
+        return $this->service->downloadTemplate();
     }
 
     /**

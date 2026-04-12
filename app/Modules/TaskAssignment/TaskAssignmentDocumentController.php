@@ -20,7 +20,6 @@ use App\Modules\TaskAssignment\Services\TaskAssignmentDocumentService;
 
 /**
  * @group TaskAssignment - Văn bản giao việc
- * @header X-Organization-Id ID tổ chức cần làm việc (bắt buộc với endpoint yêu cầu auth). Example: 1
  *
  * Quản lý văn bản giao việc và tệp đính kèm: thống kê, danh sách, chi tiết, tạo, cập nhật, xóa, thao tác hàng loạt, xuất/nhập, đổi trạng thái và quản lý tệp đính kèm.
  */

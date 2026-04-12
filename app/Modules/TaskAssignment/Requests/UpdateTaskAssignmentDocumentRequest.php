@@ -15,6 +15,7 @@ class UpdateTaskAssignmentDocumentRequest extends FormRequest
             'summary' => 'nullable|string',
             'issue_date' => 'nullable|date',
             'task_assignment_type_id' => 'nullable|integer|exists:task_assignment_types,id',
+            'status' => 'sometimes|in:draft,issued',
         ];
     }
 
@@ -22,6 +23,7 @@ class UpdateTaskAssignmentDocumentRequest extends FormRequest
     {
         return [
             'task_assignment_type_id.exists' => 'Loại văn bản không tồn tại.',
+            'status.in' => 'Trạng thái không hợp lệ.',
         ];
     }
 

@@ -71,6 +71,10 @@ Route::middleware(['auth:sanctum', 'set.permissions.team', 'log.activity'])->gro
     Route::prefix('settings')->group(function () {
         require base_path('app/Modules/Core/Routes/setting.php');
     });
+});
+
+// Route module TaskAssignment - không cần organization context (hoạt động độc lập)
+Route::middleware(['auth:sanctum', 'set.permissions.team.optional', 'log.activity'])->group(function () {
     Route::prefix('task-assignment-departments')->group(function () {
         require base_path('app/Modules/TaskAssignment/Routes/task_assignment_department.php');
     });

@@ -15,7 +15,6 @@ use App\Modules\TaskAssignment\Services\TaskAssignmentItemReportService;
 
 /**
  * @group TaskAssignment - Báo cáo công việc
- * @header X-Organization-Id ID tổ chức cần làm việc (bắt buộc với endpoint yêu cầu auth). Example: 1
  *
  * Quản lý báo cáo kết quả thực hiện công việc: danh sách, chi tiết, tạo, cập nhật, xóa và xóa hàng loạt. Mỗi báo cáo gắn với một công việc cụ thể và có thể đính kèm tệp minh chứng.
  */

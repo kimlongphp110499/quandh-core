@@ -5,6 +5,7 @@ use App\Modules\TaskAssignment\TaskAssignmentItemReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/export', [TaskAssignmentItemController::class, 'export'])->middleware('permission:task-assignment-items.export,web');
+Route::get('/import/template', [TaskAssignmentItemController::class, 'downloadTemplate'])->middleware('permission:task-assignment-items.import,web');
 Route::post('/import', [TaskAssignmentItemController::class, 'import'])->middleware('permission:task-assignment-items.import,web');
 Route::post('/bulk-delete', [TaskAssignmentItemController::class, 'bulkDestroy'])->middleware('permission:task-assignment-items.bulkDestroy,web');
 Route::patch('/bulk-status', [TaskAssignmentItemController::class, 'bulkUpdateStatus'])->middleware('permission:task-assignment-items.bulkUpdateStatus,web');
