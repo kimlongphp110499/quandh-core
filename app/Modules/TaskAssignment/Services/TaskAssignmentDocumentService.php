@@ -55,8 +55,49 @@ class TaskAssignmentDocumentService
 
     public function update(TaskAssignmentDocument $document, array $validated): TaskAssignmentDocument
     {
-        DB::transaction(function () use ($document, $validated) {
+        $newStatus = $validated['status'] ?? null;
+        $isTransitioningToIssued = $newStatus === TaskAssignmentDocumentStatusEnum::Issued->value
+            && $document->status !== TaskAssignmentDocumentStatusEnum::Issued->value;
+
+        // Khóa chỉnh sửa các trường cốt lõi khi văn bản đã ban hành
+        // (chỉ cho phép chuyển về bản nháp qua trường status)
+        if ($document->status === TaskAssignmentDocumentStatusEnum::Issued->value) {
+            if ($newStatus !== TaskAssignmentDocumentStatusEnum::Draft->value) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => ['Không thể chỉnh sửa văn bản đã ban hành. Vui lòng chuyển về bản nháp trước.'],
+                ]);
+            }
+
+            // Chỉ cho phép đổi status về draft, bỏ qua các trường khác
+            DB::transaction(function () use ($document) {
+                $document->update([
+                    'status' => TaskAssignmentDocumentStatusEnum::Draft->value,
+                    'issued_at' => null,
+                ]);
+            });
+
+            return $document->load(['type', 'attachments.media', 'creator', 'editor']);
+        }
+
+        // Validate bắt buộc khi chuyển từ bản nháp sang ban hành
+        if ($isTransitioningToIssued) {
+            $errors = $this->validateBeforeIssue($document);
+            if (!empty($errors)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => $errors,
+                ]);
+            }
+        }
+
+        DB::transaction(function () use ($document, $validated, $isTransitioningToIssued) {
             $data = collect($validated)->except(['attachment_ids'])->all();
+
+            if ($isTransitioningToIssued) {
+                $data['issued_at'] = now();
+                // Sinh lịch nhắc ban đầu cho các công việc có hạn
+                $this->reminderService->generateRemindersForDocument($document);
+            }
+
             $document->update($data);
         });
 
@@ -75,11 +116,56 @@ class TaskAssignmentDocumentService
 
     public function bulkUpdateStatus(array $ids, string $status): void
     {
-        TaskAssignmentDocument::whereIn('id', $ids)->update(['status' => $status]);
+        $data = ['status' => $status];
+
+        // Khi ban hành, ghi nhận thời điểm ban hành cho từng văn bản chưa có issued_at
+        if ($status === TaskAssignmentDocumentStatusEnum::Issued->value) {
+            $data['issued_at'] = now();
+        }
+
+        // Khi chuyển về nháp, xóa thời điểm ban hành
+        if ($status === TaskAssignmentDocumentStatusEnum::Draft->value) {
+            $data['issued_at'] = null;
+        }
+
+        TaskAssignmentDocument::whereIn('id', $ids)->update($data);
+    }
+
+    /**
+     * Validate các điều kiện bắt buộc trước khi ban hành văn bản.
+     * Trả về danh sách lỗi nếu không đạt, mảng rỗng nếu hợp lệ.
+     */
+    public function validateBeforeIssue(TaskAssignmentDocument $document): array
+    {
+        $errors = [];
+
+        // Phải có ít nhất 1 công việc
+        $itemsCount = $document->items()->count();
+        if ($itemsCount === 0) {
+            $errors[] = 'Văn bản phải có ít nhất 1 công việc trước khi ban hành.';
+        }
+
+        // Tất cả công việc phải có tên
+        $missingName = $document->items()->whereNull('name')->orWhere('name', '')->count();
+        if ($missingName > 0) {
+            $errors[] = "Có {$missingName} công việc chưa có tên.";
+        }
+
+        return $errors;
     }
 
     public function changeStatus(TaskAssignmentDocument $document, string $status): TaskAssignmentDocument
     {
+        // Validate bắt buộc khi ban hành
+        if ($status === TaskAssignmentDocumentStatusEnum::Issued->value) {
+            $errors = $this->validateBeforeIssue($document);
+            if (!empty($errors)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => $errors,
+                ]);
+            }
+        }
+
         DB::transaction(function () use ($document, $status) {
             $data = ['status' => $status];
 
@@ -87,6 +173,11 @@ class TaskAssignmentDocumentService
                 $data['issued_at'] = now();
                 // Sinh lịch nhắc ban đầu cho các công việc có hạn
                 $this->reminderService->generateRemindersForDocument($document);
+            }
+
+            // Khi chuyển về nháp, xóa thời điểm ban hành
+            if ($status === TaskAssignmentDocumentStatusEnum::Draft->value) {
+                $data['issued_at'] = null;
             }
 
             $document->update($data);
@@ -107,6 +198,12 @@ class TaskAssignmentDocumentService
 
     public function addAttachments(TaskAssignmentDocument $document, array $files): TaskAssignmentDocument
     {
+        if ($document->status === TaskAssignmentDocumentStatusEnum::Issued->value) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'status' => ['Không thể thêm tệp đính kèm cho văn bản đã ban hành.'],
+            ]);
+        }
+
         $storedFiles = [];
 
         try {
@@ -140,6 +237,12 @@ class TaskAssignmentDocumentService
 
     public function removeAttachment(TaskAssignmentDocument $document, TaskAssignmentDocumentAttachment $attachment): void
     {
+        if ($document->status === TaskAssignmentDocumentStatusEnum::Issued->value) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'status' => ['Không thể xóa tệp đính kèm của văn bản đã ban hành.'],
+            ]);
+        }
+
         DB::transaction(function () use ($attachment) {
             $attachment->delete();
         });
@@ -147,6 +250,12 @@ class TaskAssignmentDocumentService
 
     public function sortAttachments(TaskAssignmentDocument $document, array $orderedIds): void
     {
+        if ($document->status === TaskAssignmentDocumentStatusEnum::Issued->value) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'status' => ['Không thể sắp xếp tệp đính kèm của văn bản đã ban hành.'],
+            ]);
+        }
+
         DB::transaction(function () use ($orderedIds) {
             foreach ($orderedIds as $index => $id) {
                 TaskAssignmentDocumentAttachment::where('id', $id)

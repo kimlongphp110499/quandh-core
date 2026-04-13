@@ -20,6 +20,7 @@ class UpdateTaskAssignmentItemRequest extends FormRequest
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'task_assignment_item_type_id' => 'nullable|integer|exists:task_assignment_item_types,id',
+            'task_assignment_document_id' => 'nullable|integer|exists:task_assignment_documents,id',
             'deadline_type' => ['sometimes', TaskDeadlineTypeEnum::rule()],
             'start_at' => 'nullable|date',
             'end_at' => 'nullable|date|after_or_equal:start_at',
@@ -36,6 +37,31 @@ class UpdateTaskAssignmentItemRequest extends FormRequest
             'user_assignments.*.assignment_status' => ['nullable', TaskAssignmentUserStatusEnum::rule()],
             'user_assignments.*.note' => 'nullable|string',
         ];
+    }
+
+    /**
+     * Cấu hình logic kiểm tra sau khi các rules cơ bản đã pass
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $docId = $this->input('task_assignment_document_id');
+            
+            if ($docId) {
+                // Kiểm tra trạng thái của văn bản
+                $isIssued = \DB::table('task_assignment_documents')
+                    ->where('id', $docId)
+                    ->where('status', 'issued') // Hoặc dùng TaskAssignmentDocumentStatusEnum::ISSUED
+                    ->exists();
+
+                if ($isIssued) {
+                    $validator->errors()->add(
+                        'task_assignment_document_id', 
+                        'Không thể gán công việc vào văn bản đã ban hành.'
+                    );
+                }
+            }
+        });
     }
 
     public function bodyParameters(): array { return []; }

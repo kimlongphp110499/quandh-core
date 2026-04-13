@@ -2,14 +2,16 @@
 
 namespace App\Modules\TaskAssignment\Services;
 
+use App\Modules\TaskAssignment\Enums\TaskAssignmentDocumentStatusEnum;
 use App\Modules\TaskAssignment\Enums\TaskProgressStatusEnum;
 use App\Modules\TaskAssignment\Exports\TaskAssignmentItemsExport;
 use App\Modules\TaskAssignment\Imports\TaskAssignmentItemsImport;
+use App\Modules\TaskAssignment\Models\TaskAssignmentDocument;
 use App\Modules\TaskAssignment\Models\TaskAssignmentItem;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
+use App\Modules\TaskAssignment\Exports\TaskAssignmentItemsTemplateExport;
 class TaskAssignmentItemService
 {
     public function stats(array $filters): array
@@ -37,6 +39,19 @@ class TaskAssignmentItemService
     public function show(TaskAssignmentItem $item): TaskAssignmentItem
     {
         return $item->load(['document.type', 'itemType', 'departments', 'users', 'reports.attachments', 'creator', 'editor']);
+    }
+
+    /**
+     * Kiểm tra văn bản giao việc cha đã ban hành chưa.
+     * Ném lỗi ValidationException nếu đã ban hành.
+     */
+    private function guardDocumentNotIssued(TaskAssignmentDocument $document): void
+    {
+        if ($document->status === TaskAssignmentDocumentStatusEnum::Issued->value) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'document' => ['Không thể thay đổi công việc thuộc văn bản đã ban hành.'],
+            ]);
+        }
     }
 
     public function store(array $validated): TaskAssignmentItem
@@ -72,6 +87,12 @@ class TaskAssignmentItemService
 
     public function destroy(TaskAssignmentItem $item): void
     {
+        // Kiểm tra văn bản cha chưa ban hành
+        $item->loadMissing('document');
+        if ($item->document) {
+            $this->guardDocumentNotIssued($item->document);
+        }
+
         $item->delete();
     }
 
@@ -99,9 +120,39 @@ class TaskAssignmentItemService
         return Excel::download(new TaskAssignmentItemsExport($filters), 'task-assignment-items.xlsx');
     }
 
-    public function import($file): void
+    /**
+     * Import danh sách công việc từ file Excel theo mẫu template.
+     *
+     * @param  mixed  $file  File upload từ request
+     * @return array{imported: int, failed: int, failures: array}  Kết quả import
+     */
+    public function import($file): array
     {
-        Excel::import(new TaskAssignmentItemsImport, $file);
+        $importer = new TaskAssignmentItemsImport;
+
+        Excel::import($importer, $file);
+
+        $failures = $importer->failures();
+
+        $failureDetails = collect($failures)->map(fn ($f) => [
+            'row'     => $f->row(),
+            'errors'  => $f->errors(),
+            'values'  => $f->values(),
+        ])->toArray();
+
+        return [
+            'imported' => $importer->getImportedCount(),
+            'failed'   => count($failureDetails),
+            'failures' => $failureDetails,
+        ];
+    }
+
+    /**
+     * Tải file Excel mẫu để người dùng điền dữ liệu trước khi import.
+     */
+    public function downloadTemplate(): BinaryFileResponse
+    {
+        return Excel::download(new TaskAssignmentItemsTemplateExport, 'mau-import-cong-viec.xlsx');
     }
 
     public function statsByDepartment(array $filters): array

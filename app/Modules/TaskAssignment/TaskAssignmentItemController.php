@@ -264,9 +264,19 @@ class TaskAssignmentItemController extends Controller
      */
     public function import(ImportTaskAssignmentItemRequest $request)
     {
-        $this->service->import($request->file('file'));
+        $result = $this->service->import($request->file('file'));
 
-        return $this->success(null, 'Import công việc thành công.');
+        $message = "Import hoàn tất: {$result['imported']} dòng thành công";
+        if ($result['failed'] > 0) {
+            $message .= ", {$result['failed']} dòng lỗi";
+        }
+        $message .= '.';
+
+        return $this->success([
+            'imported' => $result['imported'],
+            'failed'   => $result['failed'],
+            'failures' => $result['failures'],
+        ], $message);
     }
 
     /**
