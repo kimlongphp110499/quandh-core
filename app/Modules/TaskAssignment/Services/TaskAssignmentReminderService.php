@@ -3,13 +3,14 @@
 namespace App\Modules\TaskAssignment\Services;
 
 use App\Modules\TaskAssignment\Enums\TaskProgressStatusEnum;
+use App\Modules\TaskAssignment\Enums\TaskReminderChannelEnum;
 use App\Modules\TaskAssignment\Enums\TaskReminderStatusEnum;
 use App\Modules\TaskAssignment\Enums\TaskDeadlineTypeEnum;
 use App\Modules\TaskAssignment\Models\TaskAssignmentDocument;
 use App\Modules\TaskAssignment\Models\TaskAssignmentItem;
 use App\Modules\TaskAssignment\Models\TaskAssignmentReminder;
+use App\Modules\TaskAssignment\Notifications\TaskAssignmentReminderEmailNotification;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class TaskAssignmentReminderService
 {
@@ -52,7 +53,7 @@ class TaskAssignmentReminderService
 
         foreach ($remindDates as $remindAt) {
             foreach ($item->users as $user) {
-                $this->createReminderIfNotExists($item, $remindAt, 'system', null, $user->id);
+                $this->createReminderIfNotExists($item, $remindAt, TaskReminderChannelEnum::Email->value, null, $user->id);
             }
         }
     }
@@ -87,8 +88,21 @@ class TaskAssignmentReminderService
 
     protected function sendReminder(TaskAssignmentReminder $reminder): void
     {
-        // Implement notification gửi qua channel tương ứng
-        // (in-app, email, zalo, sms) - placeholder
+        $recipientUser = $reminder->recipientUser;
+
+        if (! $recipientUser) {
+            throw new \RuntimeException('Không xác định được người nhận nhắc việc.');
+        }
+
+        // Tạm thời ưu tiên gửi email cho reminder channel email và dữ liệu cũ channel system.
+        if (! in_array($reminder->channel, [
+            TaskReminderChannelEnum::Email->value,
+            TaskReminderChannelEnum::System->value,
+        ], true)) {
+            return;
+        }
+
+        $recipientUser->notify(new TaskAssignmentReminderEmailNotification($reminder));
     }
 
     private function createReminderIfNotExists(

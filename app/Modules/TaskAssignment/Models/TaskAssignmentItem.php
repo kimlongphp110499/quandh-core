@@ -147,6 +147,8 @@ class TaskAssignmentItem extends Model
             $allowed = ['id', 'created_at', 'updated_at', 'start_at', 'end_at', 'completion_percent', 'priority'];
             $column = in_array($sortBy, $allowed) ? $sortBy : 'created_at';
             $query->orderBy($column, $filters['sort_order'] ?? 'desc');
+        })->when($filters['document_issued'] ?? null, function ($query, $val) {
+            $query->whereHas('document', fn ($q) => $q->where('status', 'issued'));
         });
     }
 }

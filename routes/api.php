@@ -93,4 +93,7 @@ Route::middleware(['auth:sanctum', 'set.permissions.team.optional', 'log.activit
     Route::prefix('task-assignment-item-reports')->group(function () {
         require base_path('app/Modules/TaskAssignment/Routes/task_assignment_item_report.php');
     });
+    Route::prefix('my-task-assignment-items')->group(function () {
+        require base_path('app/Modules/TaskAssignment/Routes/my_task_assignment_item.php');
+    });
 });

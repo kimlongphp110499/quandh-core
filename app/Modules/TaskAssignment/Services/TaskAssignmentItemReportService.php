@@ -37,8 +37,8 @@ class TaskAssignmentItemReportService
                 $report = TaskAssignmentItemReport::create($data);
 
                 foreach ($files as $file) {
-                    $media = $this->mediaService->upload($file, 'task-assignment-item-report-attachments');
-                    $storedFiles[] = $media;
+                    $media = $this->mediaService->uploadOne($report, $file, 'task-assignment-item-report-attachments');
+                    $storedFiles[] = ['disk' => $media->disk, 'path' => $media->getPathRelativeToRoot()];
 
                     TaskAssignmentItemReportAttachment::create([
                         'task_assignment_item_report_id' => $report->id,
@@ -72,8 +72,8 @@ class TaskAssignmentItemReportService
                 }
 
                 foreach ($files as $file) {
-                    $media = $this->mediaService->upload($file, 'task-assignment-item-report-attachments');
-                    $storedFiles[] = $media;
+                    $media = $this->mediaService->uploadOne($report, $file, 'task-assignment-item-report-attachments');
+                    $storedFiles[] = ['disk' => $media->disk, 'path' => $media->getPathRelativeToRoot()];
 
                     $maxSort = $report->attachments()->max('sort_order') ?? 0;
                     TaskAssignmentItemReportAttachment::create([

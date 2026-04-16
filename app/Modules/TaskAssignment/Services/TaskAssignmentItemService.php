@@ -214,6 +214,54 @@ class TaskAssignmentItemService
             ->toArray();
     }
 
+    /**
+     * Lấy danh sách công việc được phân công cho user hiện tại (màn "Công việc của tôi").
+     * Tự động thêm điều kiện user_id = user đang đăng nhập, hỗ trợ đầy đủ bộ lọc.
+     * Kèm thông tin văn bản, phòng ban, người giao, người phối hợp.
+     *
+     * @param  array  $filters  Các tiêu chí lọc (đã bao gồm user_id)
+     * @param  int    $limit    Số bản ghi mỗi trang
+     */
+    public function myTasks(array $filters, int $limit)
+    {
+        return TaskAssignmentItem::with(['document.type', 'itemType', 'departments', 'users'])
+            ->whereHas('document', fn ($q) => $q->where('status', 'issued'))
+            ->filter($filters)
+            ->paginate($limit);
+    }
+
+    /**
+     * Cập nhật tiến độ công việc từ phía người được phân công.
+     * Đồng bộ trạng thái tự động qua model boot:
+     * - processing_status = done => completion_percent = 100
+     * - completion_percent = 100 => processing_status = done
+     * - Quá end_at chưa hoàn thành => overdue (được đánh dấu qua scheduler riêng)
+     * Đồng thời cập nhật ghi chú trong bảng pivot task_assignment_item_user.
+     *
+     * @param  TaskAssignmentItem  $item       Công việc cần cập nhật
+     * @param  array               $validated  Dữ liệu đã validate: processing_status, completion_percent, note
+     */
+    public function updateProgress(TaskAssignmentItem $item, array $validated): TaskAssignmentItem
+    {
+        return DB::transaction(function () use ($item, $validated) {
+            // Cập nhật trạng thái và phần trăm lên bảng item (model boot sẽ đồng bộ tự động)
+            $itemData = collect($validated)->only(['processing_status', 'completion_percent'])->all();
+
+            if (! empty($itemData)) {
+                $item->update($itemData);
+            }
+
+            // Cập nhật ghi chú tiến độ vào pivot của user hiện tại
+            if (isset($validated['note'])) {
+                $item->users()->updateExistingPivot(auth()->id(), [
+                    'note' => $validated['note'],
+                ]);
+            }
+
+            return $item->load(['document.type', 'itemType', 'departments', 'users']);
+        });
+    }
+
     public function overdue(array $filters): mixed
     {
         return TaskAssignmentItem::with(['document', 'departments', 'users'])
