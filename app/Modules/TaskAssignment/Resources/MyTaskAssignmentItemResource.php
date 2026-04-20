@@ -69,6 +69,7 @@ class MyTaskAssignmentItemResource extends JsonResource
             ])),
             // Thông tin pivot riêng của user hiện tại
             'my_assignment'                 => $myPivot,
+            'created_by'                    => $this->whenLoaded('creator', fn () => $this->creator?->name, $this->created_by),
             'created_at'                    => $this->created_at?->format('d/m/Y H:i:s'),
             'updated_at'                    => $this->updated_at?->format('d/m/Y H:i:s'),
         ];

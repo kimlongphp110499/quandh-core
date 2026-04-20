@@ -19,6 +19,7 @@ class TaskAssignmentDocument extends Model implements HasMedia
         'task_assignment_type_id',
         'status',
         'issued_at',
+        'issued_by',
         'created_by',
         'updated_by',
     ];
@@ -43,6 +44,12 @@ class TaskAssignmentDocument extends Model implements HasMedia
     public function editor()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /** Người thực hiện ban hành văn bản */
+    public function issuer()
+    {
+        return $this->belongsTo(User::class, 'issued_by');
     }
 
     public function type()

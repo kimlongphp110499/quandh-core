@@ -34,14 +34,14 @@ class TaskAssignmentDocumentService
 
     public function index(array $filters, int $limit)
     {
-        return TaskAssignmentDocument::with(['type', 'creator', 'editor'])
+        return TaskAssignmentDocument::with(['type', 'creator', 'editor', 'issuer'])
             ->filter($filters)
             ->paginate($limit);
     }
 
     public function show(TaskAssignmentDocument $document): TaskAssignmentDocument
     {
-        return $document->load(['type', 'attachments.media', 'creator', 'editor']);
+        return $document->load(['type', 'attachments.media', 'creator', 'editor', 'issuer']);
     }
 
     public function store(array $validated): TaskAssignmentDocument
@@ -73,10 +73,11 @@ class TaskAssignmentDocumentService
                 $document->update([
                     'status' => TaskAssignmentDocumentStatusEnum::Draft->value,
                     'issued_at' => null,
+                    'issued_by' => null,
                 ]);
             });
 
-            return $document->load(['type', 'attachments.media', 'creator', 'editor']);
+            return $document->load(['type', 'attachments.media', 'creator', 'editor', 'issuer']);
         }
 
         // Validate bắt buộc khi chuyển từ bản nháp sang ban hành
@@ -94,6 +95,8 @@ class TaskAssignmentDocumentService
 
             if ($isTransitioningToIssued) {
                 $data['issued_at'] = now();
+                // Ghi nhận user thực hiện ban hành
+                $data['issued_by'] = auth()->id();
                 // Sinh lịch nhắc ban đầu cho các công việc có hạn
                 $this->reminderService->generateRemindersForDocument($document);
             }
@@ -101,7 +104,7 @@ class TaskAssignmentDocumentService
             $document->update($data);
         });
 
-        return $document->load(['type', 'attachments.media', 'creator', 'editor']);
+        return $document->load(['type', 'attachments.media', 'creator', 'editor', 'issuer']);
     }
 
     public function destroy(TaskAssignmentDocument $document): void
@@ -118,14 +121,16 @@ class TaskAssignmentDocumentService
     {
         $data = ['status' => $status];
 
-        // Khi ban hành, ghi nhận thời điểm ban hành cho từng văn bản chưa có issued_at
+        // Khi ban hành, ghi nhận thời điểm và người ban hành
         if ($status === TaskAssignmentDocumentStatusEnum::Issued->value) {
             $data['issued_at'] = now();
+            $data['issued_by'] = auth()->id();
         }
 
-        // Khi chuyển về nháp, xóa thời điểm ban hành
+        // Khi chuyển về nháp, xóa thông tin ban hành
         if ($status === TaskAssignmentDocumentStatusEnum::Draft->value) {
             $data['issued_at'] = null;
+            $data['issued_by'] = null;
         }
 
         TaskAssignmentDocument::whereIn('id', $ids)->update($data);
@@ -171,19 +176,22 @@ class TaskAssignmentDocumentService
 
             if ($status === TaskAssignmentDocumentStatusEnum::Issued->value) {
                 $data['issued_at'] = now();
+                // Ghi nhận user thực hiện ban hành
+                $data['issued_by'] = auth()->id();
                 // Sinh lịch nhắc ban đầu cho các công việc có hạn
                 $this->reminderService->generateRemindersForDocument($document);
             }
 
-            // Khi chuyển về nháp, xóa thời điểm ban hành
+            // Khi chuyển về nháp, xóa thông tin ban hành
             if ($status === TaskAssignmentDocumentStatusEnum::Draft->value) {
                 $data['issued_at'] = null;
+                $data['issued_by'] = null;
             }
 
             $document->update($data);
         });
 
-        return $document->load(['type', 'attachments.media', 'creator', 'editor']);
+        return $document->load(['type', 'attachments.media', 'creator', 'editor', 'issuer']);
     }
 
     public function export(array $filters): BinaryFileResponse

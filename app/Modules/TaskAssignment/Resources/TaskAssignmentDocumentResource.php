@@ -18,6 +18,7 @@ class TaskAssignmentDocumentResource extends JsonResource
             'type' => $this->whenLoaded('type', fn () => new TaskAssignmentTypeResource($this->type)),
             'status' => $this->status,
             'issued_at' => $this->issued_at?->format('d/m/Y H:i:s'),
+            'issued_by' => $this->issuer?->name ?? null,
             'attachments' => $this->whenLoaded('attachments', fn () => TaskAssignmentDocumentAttachmentResource::collection($this->attachments)),
             'items_count' => $this->whenLoaded('items', fn () => $this->items->count()),
             'created_by' => $this->creator?->name ?? 'N/A',

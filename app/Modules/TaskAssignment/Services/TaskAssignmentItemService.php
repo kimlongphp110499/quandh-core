@@ -208,7 +208,8 @@ class TaskAssignmentItemService
             ->selectRaw("DATE_FORMAT(created_at, '{$format}') as period, COUNT(*) as total,
                 SUM(processing_status = 'done') as done,
                 SUM(processing_status = 'overdue') as overdue")
-            ->groupBy('period')
+            ->groupBy(DB::raw("DATE_FORMAT(created_at, '{$format}')"))
+            ->reorder()
             ->orderBy('period')
             ->get()
             ->toArray();
@@ -224,7 +225,7 @@ class TaskAssignmentItemService
      */
     public function myTasks(array $filters, int $limit)
     {
-        return TaskAssignmentItem::with(['document.type', 'itemType', 'departments', 'users'])
+        return TaskAssignmentItem::with(['document.type', 'itemType', 'departments', 'users', 'creator'])
             ->whereHas('document', fn ($q) => $q->where('status', 'issued'))
             ->filter($filters)
             ->paginate($limit);
@@ -258,7 +259,7 @@ class TaskAssignmentItemService
                 ]);
             }
 
-            return $item->load(['document.type', 'itemType', 'departments', 'users']);
+            return $item->load(['document.type', 'itemType', 'departments', 'users', 'creator']);
         });
     }
 

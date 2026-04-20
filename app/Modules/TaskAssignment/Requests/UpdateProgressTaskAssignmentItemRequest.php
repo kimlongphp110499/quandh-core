@@ -26,6 +26,7 @@ class UpdateProgressTaskAssignmentItemRequest extends FormRequest
                     TaskProgressStatusEnum::Done->value,
                     TaskProgressStatusEnum::Paused->value,
                     TaskProgressStatusEnum::Cancelled->value,
+                    TaskProgressStatusEnum::Overdue->value,
                 ]),
             ],
             // Phần trăm hoàn thành, 0-100
