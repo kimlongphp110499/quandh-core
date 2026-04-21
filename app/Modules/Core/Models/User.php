@@ -2,6 +2,7 @@
 
 namespace App\Modules\Core\Models;
 
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -63,6 +64,18 @@ class User extends Authenticatable
     public function preference()
     {
         return $this->hasOne(UserPreference::class);
+    }
+
+    /**
+     * Gửi thông báo đặt lại mật khẩu dùng URL frontend SPA thay vì route Laravel.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $frontendUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', config('app.url'))), '/');
+        $url = $frontendUrl . '/reset-password?token=' . $token . '&email=' . urlencode($this->email);
+
+        ResetPassword::createUrlUsing(fn () => $url);
+        $this->notify(new ResetPassword($token));
     }
 
     public function scopeFilter($query, array $filters)
