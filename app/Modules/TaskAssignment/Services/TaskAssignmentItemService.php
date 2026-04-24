@@ -8,6 +8,7 @@ use App\Modules\TaskAssignment\Exports\TaskAssignmentItemsExport;
 use App\Modules\TaskAssignment\Imports\TaskAssignmentItemsImport;
 use App\Modules\TaskAssignment\Models\TaskAssignmentDocument;
 use App\Modules\TaskAssignment\Models\TaskAssignmentItem;
+use App\Modules\TaskAssignment\Models\TaskAssignmentProgressLog;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -242,9 +243,20 @@ class TaskAssignmentItemService
      * @param  TaskAssignmentItem  $item       Công việc cần cập nhật
      * @param  array               $validated  Dữ liệu đã validate: processing_status, completion_percent, note
      */
+    /**
+     * Cập nhật tiến độ công việc từ phía người được phân công.
+     * Đồng thời ghi 1 dòng lịch sử vào task_assignment_progress_logs.
+     *
+     * @param  TaskAssignmentItem  $item       Công việc cần cập nhật
+     * @param  array               $validated  Dữ liệu đã validate: processing_status, completion_percent, note
+     */
     public function updateProgress(TaskAssignmentItem $item, array $validated): TaskAssignmentItem
     {
         return DB::transaction(function () use ($item, $validated) {
+            // Lưu giá trị cũ trước khi cập nhật để ghi log
+            $oldStatus  = $item->processing_status;
+            $oldPercent = (int) $item->completion_percent;
+
             // Cập nhật trạng thái và phần trăm lên bảng item (model boot sẽ đồng bộ tự động)
             $itemData = collect($validated)->only(['processing_status', 'completion_percent'])->all();
 
@@ -259,8 +271,31 @@ class TaskAssignmentItemService
                 ]);
             }
 
+            // Ghi lịch sử cập nhật tiến độ (sau khi model boot đã đồng bộ)
+            $item->refresh();
+            TaskAssignmentProgressLog::create([
+                'task_assignment_item_id' => $item->id,
+                'user_id'                 => auth()->id(),
+                'old_processing_status'   => $oldStatus,
+                'new_processing_status'   => $item->processing_status,
+                'old_completion_percent'  => $oldPercent,
+                'new_completion_percent'  => (int) $item->completion_percent,
+                'note'                    => $validated['note'] ?? null,
+            ]);
+
             return $item->load(['document.type', 'itemType', 'departments', 'users', 'creator']);
         });
+    }
+
+    /**
+     * Lấy danh sách lịch sử cập nhật tiến độ của một công việc.
+     * Trả về mới nhất trước, kèm thông tin người cập nhật.
+     *
+     * @param  TaskAssignmentItem  $item  Công việc cần xem lịch sử
+     */
+    public function getProgressHistory(TaskAssignmentItem $item)
+    {
+        return $item->progressLogs()->with('user')->get();
     }
 
     public function overdue(array $filters): mixed

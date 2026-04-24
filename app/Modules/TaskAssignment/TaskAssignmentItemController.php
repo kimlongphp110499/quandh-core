@@ -10,8 +10,10 @@ use App\Modules\TaskAssignment\Requests\BulkUpdateStatusTaskAssignmentItemReques
 use App\Modules\TaskAssignment\Requests\ChangeStatusTaskAssignmentItemRequest;
 use App\Modules\TaskAssignment\Requests\ImportTaskAssignmentItemRequest;
 use App\Modules\TaskAssignment\Requests\StoreTaskAssignmentItemRequest;
+use App\Modules\TaskAssignment\Requests\UpdateProgressTaskAssignmentItemRequest;
 use App\Modules\TaskAssignment\Requests\UpdateTaskAssignmentItemRequest;
 use App\Modules\TaskAssignment\Resources\TaskAssignmentItemCollection;
+use App\Modules\TaskAssignment\Resources\TaskAssignmentProgressLogResource;
 use App\Modules\TaskAssignment\Resources\TaskAssignmentItemResource;
 use App\Modules\TaskAssignment\Services\TaskAssignmentItemService;
 
@@ -236,6 +238,31 @@ class TaskAssignmentItemController extends Controller
     }
 
     /**
+     * Cập nhật tiến độ công việc (dành cho admin/quản lý)
+     *
+     * Cập nhật trạng thái xử lý, phần trăm hoàn thành và ghi chú tiến độ.
+     * Đồng thời ghi lịch sử cập nhật vào bảng progress_logs.
+     *
+     * @urlParam taskAssignmentItem integer required ID công việc. Example: 1
+     *
+     * @bodyParam processing_status string Trạng thái xử lý mới: todo, in_progress, done, paused, cancelled. Example: in_progress
+     * @bodyParam completion_percent integer Phần trăm hoàn thành (0-100). Example: 60
+     * @bodyParam note string Ghi chú tiến độ (tối đa 1000 ký tự). Example: Đang thực hiện.
+     *
+     * @apiResource App\Modules\TaskAssignment\Resources\TaskAssignmentItemResource
+     *
+     * @apiResourceModel App\Modules\TaskAssignment\Models\TaskAssignmentItem
+     *
+     * @apiResourceAdditional success=true message="Cập nhật tiến độ thành công!"
+     */
+    public function updateProgress(UpdateProgressTaskAssignmentItemRequest $request, TaskAssignmentItem $taskAssignmentItem)
+    {
+        $item = $this->service->updateProgress($taskAssignmentItem, $request->validated());
+
+        return $this->successResource(new TaskAssignmentItemResource($item), 'Cập nhật tiến độ thành công!');
+    }
+
+    /**
      * Xuất Excel danh sách công việc
      *
      * Xuất ra các trường: id, tên công việc, loại, văn bản giao việc, phòng ban, người chủ trì, trạng thái, ưu tiên, % hoàn thành, ngày bắt đầu, ngày kết thúc, created_by, updated_by, created_at, updated_at.
@@ -396,5 +423,23 @@ class TaskAssignmentItemController extends Controller
         return $this->successCollection(new TaskAssignmentItemCollection(
             $this->service->upcomingDeadline($request->all())
         ));
+    }
+
+    /**
+     * Lịch sử cập nhật tiến độ công việc
+     *
+     * Trả về danh sách các lần cập nhật tiến độ của công việc,
+     * bao gồm trạng thái cũ/mới, phần trăm cũ/mới, ghi chú và người cập nhật.
+     * Sắp xếp theo thời gian mới nhất trước.
+     *
+     * @urlParam taskAssignmentItem integer required ID công việc. Example: 1
+     *
+     * @response 200 {"success": true, "data": [{"id": 1, "user_name": "Nguyễn Văn A", "old_processing_status": "todo", "new_processing_status": "in_progress", "old_completion_percent": 0, "new_completion_percent": 30, "note": "Đang thực hiện", "created_at": "09:00:00 23/04/2026"}]}
+     */
+    public function progressHistory(TaskAssignmentItem $taskAssignmentItem)
+    {
+        $logs = $this->service->getProgressHistory($taskAssignmentItem);
+
+        return $this->success(TaskAssignmentProgressLogResource::collection($logs));
     }
 }

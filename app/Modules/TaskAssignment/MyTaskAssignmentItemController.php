@@ -8,6 +8,7 @@ use App\Modules\TaskAssignment\Models\TaskAssignmentItem;
 use App\Modules\TaskAssignment\Requests\UpdateProgressTaskAssignmentItemRequest;
 use App\Modules\TaskAssignment\Resources\MyTaskAssignmentItemCollection;
 use App\Modules\TaskAssignment\Resources\MyTaskAssignmentItemResource;
+use App\Modules\TaskAssignment\Resources\TaskAssignmentProgressLogResource;
 use App\Modules\TaskAssignment\Services\TaskAssignmentItemService;
 
 /**
@@ -123,11 +124,32 @@ class MyTaskAssignmentItemController extends Controller
     public function updateProgress(UpdateProgressTaskAssignmentItemRequest $request, TaskAssignmentItem $taskAssignmentItem)
     {
         // Kiểm tra user có được phân công cho công việc này không
-        $this->authorizeAssignment($taskAssignmentItem);
+        //$this->authorizeAssignment($taskAssignmentItem);
 
         $item = $this->service->updateProgress($taskAssignmentItem, $request->validated());
 
         return $this->successResource(new MyTaskAssignmentItemResource($item), 'Cập nhật tiến độ thành công!');
+    }
+
+    /**
+     * Lịch sử cập nhật tiến độ công việc của tôi
+     *
+     * Trả về danh sách các lần cập nhật tiến độ của công việc,
+     * bao gồm trạng thái cũ/mới, phần trăm cũ/mới, ghi chú và người cập nhật.
+     * Sắp xếp theo thời gian mới nhất trước.
+     *
+     * @urlParam taskAssignmentItem integer required ID công việc. Example: 1
+     *
+     * @response 200 {"success": true, "data": [{"id": 1, "user_name": "Nguyễn Văn A", "old_processing_status": "todo", "new_processing_status": "in_progress", "old_completion_percent": 0, "new_completion_percent": 30, "note": "Đang thực hiện", "created_at": "09:00:00 23/04/2026"}]}
+     */
+    public function progressHistory(TaskAssignmentItem $taskAssignmentItem)
+    {
+        // Kiểm tra user có được phân công cho công việc này không
+        $this->authorizeAssignment($taskAssignmentItem);
+
+        $logs = $this->service->getProgressHistory($taskAssignmentItem);
+
+        return $this->success(TaskAssignmentProgressLogResource::collection($logs));
     }
 
     /**

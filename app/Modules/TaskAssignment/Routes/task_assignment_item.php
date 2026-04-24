@@ -22,6 +22,10 @@ Route::put('/{taskAssignmentItem}', [TaskAssignmentItemController::class, 'updat
 Route::patch('/{taskAssignmentItem}', [TaskAssignmentItemController::class, 'update'])->middleware('permission:task-assignment-items.update,web');
 Route::delete('/{taskAssignmentItem}', [TaskAssignmentItemController::class, 'destroy'])->middleware('permission:task-assignment-items.destroy,web');
 Route::patch('/{taskAssignmentItem}/status', [TaskAssignmentItemController::class, 'changeStatus'])->middleware('permission:task-assignment-items.changeStatus,web');
+// Cập nhật tiến độ (admin)
+Route::patch('/{taskAssignmentItem}/progress', [TaskAssignmentItemController::class, 'updateProgress'])->middleware('permission:task-assignment-items.update,web');
+// Lịch sử cập nhật tiến độ
+Route::get('/{taskAssignmentItem}/progress-history', [TaskAssignmentItemController::class, 'progressHistory'])->middleware('permission:task-assignment-items.show,web');
 // Reports
 Route::get('/{taskAssignmentItem}/reports', [TaskAssignmentItemReportController::class, 'index'])->middleware('permission:task-assignment-item-reports.index,web');
 Route::post('/{taskAssignmentItem}/reports', [TaskAssignmentItemReportController::class, 'store'])->middleware('permission:task-assignment-item-reports.store,web');

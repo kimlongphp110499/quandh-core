@@ -11,3 +11,5 @@ Route::get('/', [MyTaskAssignmentItemController::class, 'index']);
 Route::get('/{taskAssignmentItem}', [MyTaskAssignmentItemController::class, 'show']);
 // Cập nhật tiến độ công việc của tôi
 Route::patch('/{taskAssignmentItem}/progress', [MyTaskAssignmentItemController::class, 'updateProgress']);
+// Lịch sử cập nhật tiến độ công việc của tôi
+Route::get('/{taskAssignmentItem}/progress-history', [MyTaskAssignmentItemController::class, 'progressHistory']);

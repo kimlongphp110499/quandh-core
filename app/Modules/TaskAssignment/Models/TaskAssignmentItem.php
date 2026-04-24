@@ -100,6 +100,13 @@ class TaskAssignmentItem extends Model
         return $this->hasMany(TaskAssignmentItemReport::class, 'task_assignment_item_id');
     }
 
+    /** Lịch sử cập nhật tiến độ (mới nhất trước) */
+    public function progressLogs()
+    {
+        return $this->hasMany(TaskAssignmentProgressLog::class, 'task_assignment_item_id')
+            ->latest();
+    }
+
     public function reminders()
     {
         return $this->hasMany(TaskAssignmentReminder::class, 'task_assignment_item_id');
