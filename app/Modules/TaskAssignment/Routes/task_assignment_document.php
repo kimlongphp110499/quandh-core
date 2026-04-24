@@ -9,6 +9,7 @@ Route::post('/import', [TaskAssignmentDocumentController::class, 'import'])->mid
 Route::post('/bulk-delete', [TaskAssignmentDocumentController::class, 'bulkDestroy'])->middleware('permission:task-assignment-documents.bulkDestroy,web');
 Route::patch('/bulk-status', [TaskAssignmentDocumentController::class, 'bulkUpdateStatus'])->middleware('permission:task-assignment-documents.bulkUpdateStatus,web');
 Route::get('/stats', [TaskAssignmentDocumentController::class, 'stats'])->middleware('permission:task-assignment-documents.stats,web');
+Route::get('/stats/period', [TaskAssignmentDocumentController::class, 'statsPeriod'])->middleware('permission:task-assignment-documents.stats,web');
 Route::get('/', [TaskAssignmentDocumentController::class, 'index'])->middleware('permission:task-assignment-documents.index,web');
 Route::post('/', [TaskAssignmentDocumentController::class, 'store'])->middleware('permission:task-assignment-documents.store,web');
 Route::get('/{taskAssignmentDocument}', [TaskAssignmentDocumentController::class, 'show'])->middleware('permission:task-assignment-documents.show,web');

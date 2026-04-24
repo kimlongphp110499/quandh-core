@@ -12,6 +12,7 @@ use App\Modules\TaskAssignment\Requests\BulkUpdateStatusTaskAssignmentDocumentRe
 use App\Modules\TaskAssignment\Requests\ChangeStatusTaskAssignmentDocumentRequest;
 use App\Modules\TaskAssignment\Requests\ImportTaskAssignmentDocumentRequest;
 use App\Modules\TaskAssignment\Requests\SortAttachmentsTaskAssignmentDocumentRequest;
+use App\Modules\TaskAssignment\Requests\StatsPeriodTaskAssignmentDocumentRequest;
 use App\Modules\TaskAssignment\Requests\StoreTaskAssignmentDocumentRequest;
 use App\Modules\TaskAssignment\Requests\UpdateTaskAssignmentDocumentRequest;
 use App\Modules\TaskAssignment\Resources\TaskAssignmentDocumentCollection;
@@ -43,6 +44,23 @@ class TaskAssignmentDocumentController extends Controller
     public function stats(FilterRequest $request)
     {
         return $this->success($this->service->stats($request->all()));
+    }
+
+    /**
+     * Thống kê văn bản giao việc theo kỳ
+     *
+     * Trả về tổng số văn bản phân nhóm theo tháng, quý hoặc năm.
+     *
+     * @queryParam group_by string required Kiểu nhóm: month, quarter, year. Example: month
+     * @queryParam year integer Lọc theo năm. Example: 2026
+     * @queryParam status string Lọc theo trạng thái: draft, issued.
+     * @queryParam task_assignment_type_id integer Lọc theo loại văn bản. Example: 1
+     *
+     * @response 200 {"success": true, "data": [{"label": "01/2026", "year": 2026, "period": 1, "total": 5, "draft": 2, "issued": 3}]}
+     */
+    public function statsPeriod(StatsPeriodTaskAssignmentDocumentRequest $request)
+    {
+        return $this->success($this->service->statsPeriod($request->validated()));
     }
 
     /**

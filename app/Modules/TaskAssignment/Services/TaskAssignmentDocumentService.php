@@ -32,6 +32,62 @@ class TaskAssignmentDocumentService
         ];
     }
 
+    /**
+     * Thống kê văn bản giao việc theo kỳ (tháng/quý/năm).
+     *
+     * @param  array  $filters  Bộ lọc gồm: group_by (month|quarter|year), year, task_assignment_type_id, status
+     * @return array  Danh sách các kỳ với tổng số, số draft, số issued
+     */
+    public function statsPeriod(array $filters): array
+    {
+        $groupBy   = $filters['group_by'];
+        $year      = $filters['year'] ?? null;
+        $statusFilter          = $filters['status'] ?? null;
+        $typeId                = $filters['task_assignment_type_id'] ?? null;
+
+        $query = TaskAssignmentDocument::query()
+            ->when($year, fn ($q) => $q->whereYear('issue_date', $year))
+            ->when($statusFilter, fn ($q) => $q->where('status', $statusFilter))
+            ->when($typeId, fn ($q) => $q->where('task_assignment_type_id', $typeId));
+
+        // Chọn cột nhóm theo kiểu kỳ
+        if ($groupBy === 'month') {
+            $periodSelect = DB::raw('YEAR(issue_date) as year, MONTH(issue_date) as period');
+            $groupRaw     = DB::raw('YEAR(issue_date), MONTH(issue_date)');
+            $labelFn      = fn ($row) => sprintf('%02d/%d', $row->period, $row->year);
+        } elseif ($groupBy === 'quarter') {
+            $periodSelect = DB::raw('YEAR(issue_date) as year, QUARTER(issue_date) as period');
+            $groupRaw     = DB::raw('YEAR(issue_date), QUARTER(issue_date)');
+            $labelFn      = fn ($row) => sprintf('Q%d/%d', $row->period, $row->year);
+        } else {
+            // year
+            $periodSelect = DB::raw('YEAR(issue_date) as year, YEAR(issue_date) as period');
+            $groupRaw     = DB::raw('YEAR(issue_date)');
+            $labelFn      = fn ($row) => (string) $row->year;
+        }
+
+        $rows = (clone $query)
+            ->select([
+                $periodSelect,
+                DB::raw('COUNT(*) as total'),
+                DB::raw("SUM(status = '" . TaskAssignmentDocumentStatusEnum::Draft->value . "') as draft"),
+                DB::raw("SUM(status = '" . TaskAssignmentDocumentStatusEnum::Issued->value . "') as issued"),
+            ])
+            ->groupBy($groupRaw)
+            ->orderBy('year')
+            ->orderBy('period')
+            ->get();
+
+        return $rows->map(fn ($row) => [
+            'label'  => $labelFn($row),
+            'year'   => (int) $row->year,
+            'period' => (int) $row->period,
+            'total'  => (int) $row->total,
+            'draft'  => (int) $row->draft,
+            'issued' => (int) $row->issued,
+        ])->values()->all();
+    }
+
     public function index(array $filters, int $limit)
     {
         return TaskAssignmentDocument::with(['type', 'creator', 'editor', 'issuer'])
