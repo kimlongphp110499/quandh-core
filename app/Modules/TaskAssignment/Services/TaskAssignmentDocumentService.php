@@ -307,7 +307,12 @@ class TaskAssignmentDocumentService
             ]);
         }
 
-        DB::transaction(function () use ($attachment) {
+        DB::transaction(function () use ($document, $attachment) {
+            // Xóa file vật lý trên storage thông qua MediaLibrary trước khi xóa bản ghi
+            if ($attachment->media_id) {
+                $this->mediaService->removeByIds($document, [$attachment->media_id]);
+            }
+
             $attachment->delete();
         });
     }

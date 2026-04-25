@@ -46,6 +46,8 @@ class TaskAssignmentItemReport extends Model implements HasMedia
             $query->where('task_assignment_item_id', $itemId);
         })->when($filters['reporter_user_id'] ?? null, function ($query, $userId) {
             $query->where('reporter_user_id', $userId);
+        })->when(!empty($filters['only_mine']), function ($query) {
+            $query->where('reporter_user_id', auth()->id());
         })->when($filters['sort_by'] ?? 'created_at', function ($query, $sortBy) use ($filters) {
             $allowed = ['id', 'created_at', 'completed_at'];
             $column = in_array($sortBy, $allowed) ? $sortBy : 'created_at';
